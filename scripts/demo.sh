@@ -15,3 +15,10 @@ curl -fsS "$BASE/api/demo/retrieve/$KEY" | py 'print("8-9 integrity:", "PASS" if
 curl -fsS "$BASE/api/demo/ehds-preview/$KEY" | py 'print("10 EHDS preview (non-normative):", d["summary"])'
 curl -fsS -X POST "$BASE/api/demo/tamper/$KEY?mode=embedded" | py 'print("+  tamper detected:", not d["tampered"]["passed"])'
 echo "Download: $BASE/api/demo/package/$DRAFT/envelope.pdf"
+
+# v0.2 cross-border: Jurisdiction B discovers the patient and pulls the IPS through A's gateway
+BKEY="${3:-b-okafor}"
+curl -fsS -X POST "$BASE/api/demo/xb/discover/$BKEY" | py 'print("XB1 ITI-55:", d["result"]["queryResponseCode"], "->", (d["link"] or {}).get("remoteId"))'
+curl -fsS -X POST "$BASE/api/demo/xb/exchange/$BKEY" | py 'print("XB2 ITI-38/39:", [x["mimeType"] for x in d["documents"]], "| verified:", all(c["passed"] for c in d.get("verification", [])))'
+curl -fsS "$BASE/api/demo/xb/render/$BKEY" | py 't=d["translation"]; print("XB3 %s rendition: %d translated, %d flagged untranslated" % (d["language"], len(t["translated"]), len(t["untranslated"])))'
+curl -fsS -X POST "$BASE/api/demo/xb/preserve/$BKEY" | py 'print("XB4 custody copy checks:", all(c["passed"] for c in d["checks"]))'

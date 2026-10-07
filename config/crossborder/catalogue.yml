@@ -1,0 +1,33 @@
+# Synthetic "agreed cross-border catalogue" used by the simulated NCP-A pivot
+# check. It stands in for whatever value sets and catalogues are mandated for
+# cross-border Patient Summary exchange (see register item TERM-04). It is NOT
+# a real catalogue and must not be used as one.
+meta:
+  name: "SCD-PoC synthetic cross-border catalogue"
+  version: "0.2.0"
+systems:
+  "http://snomed.info/sct":
+    - "38341003"   # hypertensive disorder
+    - "44054006"   # type 2 diabetes
+    - "195967001"  # asthma
+    - "49436004"   # atrial fibrillation
+    - "239873007"  # osteoarthritis of knee
+    - "764146007"  # penicillin
+    - "111088007"  # latex
+    - "271807003"  # eruption of skin
+    - "418363000"  # itching of skin
+    - "716186003"  # no known allergy
+  "http://www.whocc.no/atc":
+    - "C09AA05"
+    - "A10BA02"
+    - "C10AA05"
+    - "R03AC02"
+    - "R03BA02"
+    - "B01AF02"
+    - "N02BE01"
+    - "J07BB"
+    - "J07AL"
+  "http://loinc.org":
+    - "4548-4"
+    - "14682-9"
+    - "718-7"

@@ -13,7 +13,7 @@
   <div class="masthead-inner">
     <p class="eyebrow">EHDS Structured Clinical Document PoC <span id="version"></span></p>
     <h1>Preserve the clinical document.<br><em>Exchange the computable summary.</em></h1>
-    <p class="lede">Follow one synthetic patient summary from source data, through an HL7 FHIR International Patient Summary, into a PDF/A-3b preservation envelope, through IHE XDS.b and MHD sharing, and into an EHDS-oriented export preview. Every step shows the artefact and its evidence.</p>
+    <p class="lede">Follow one synthetic patient summary from source data, through an HL7 FHIR International Patient Summary, into a PDF/A-3b preservation envelope, through IHE XDS.b and MHD sharing, and into an EHDS-oriented export preview - then across a simulated border to a clinician in a second jurisdiction. Every step shows the artefact and its evidence.</p>
     <div class="masthead-actions">
       <button class="btn primary" id="run-all" disabled>Run the whole journey</button>
       <a class="btn ghost" href="/docs" target="_blank" rel="noopener">OpenAPI</a>
@@ -85,7 +85,20 @@
       <div class="out" id="o10"></div>
     </section>
 
-    <section class="step extra" id="s11">
+    <section class="step xb" id="s11" data-step="11">
+      <header><span class="num">XB</span><div><h2>Cross-border: a clinician in Jurisdiction B reads the summary</h2><p>Simulated second jurisdiction (de-DE) with its own patient index. It reaches Jurisdiction A only through A's responding gateway: IHE XCPD (ITI-55) and XCA (ITI-38 / ITI-39) over HTTP. Publish a patient in A first.</p></div></header>
+      <div class="patients" id="bpatients"></div>
+      <div class="actions">
+        <button class="btn primary" data-act="xb-all" disabled>Run cross-border exchange</button>
+        <button class="btn" data-act="xb-discover" disabled>B1 Discover patient (ITI-55)</button>
+        <button class="btn" data-act="xb-exchange" disabled>B2 Query and retrieve (ITI-38/39)</button>
+        <button class="btn" data-act="xb-render" disabled>B3 Render in de-DE</button>
+        <button class="btn" data-act="xb-preserve" disabled>B4 Preserve custody copy</button>
+      </div>
+      <div class="out" id="o11"></div>
+    </section>
+
+    <section class="step extra" id="s12" data-step="12">
       <header><span class="num">+</span><div><h2>Replace, audit and attempt to tamper</h2><p>Issued documents are immutable. A new version replaces the current one through an RPLC association; the old snapshot stays retrievable.</p></div></header>
       <div class="actions">
         <button class="btn" data-act="replace" disabled>Issue replacement version</button>
@@ -93,13 +106,13 @@
         <button class="btn warn" data-act="tamper-outer" disabled>Tamper: append bytes</button>
         <button class="btn ghost" data-act="ondemand" disabled>On-demand current summary</button>
       </div>
-      <div class="out" id="o11"></div>
+      <div class="out" id="o12"></div>
     </section>
   </div>
 </main>
 
 <footer class="foot">
-  <p>Apache-2.0. Synthetic data only. Standards baseline: HL7 FHIR IPS 2.0.1 (FHIR R4), IHE XDS.b, MHD 4.2.4, sIPS 1.0.0, ISO 19005-3 (PDF/A-3). ISO 27269 is referenced, not reproduced.</p>
+  <p>Apache-2.0. Synthetic data only. Standards baseline: HL7 FHIR IPS 2.0.1 (FHIR R4), IHE XDS.b, XCPD, XCA, MHD 4.2.4, sIPS 1.0.0, ISO 19005-3 (PDF/A-3). ISO 27269 is referenced, not reproduced.</p>
 </footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script src="/static/app.js"></script>

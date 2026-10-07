@@ -6,7 +6,7 @@ This project demonstrates a preservation-oriented clinical document pattern. It 
 
 > **Synthetic data only.** This is a demonstrator. It is not a certified or conformance-tested EHDS, MyHealth@EU, NCPeH, IHE XDS.b, MHD, sIPS or HL7 IPS implementation, and its security controls are deliberately demonstration-grade. Every HTTP response carries `X-SCDPOC-Demo-Only: true`.
 
-[Quick start](#quick-start) · [The journey](#the-journey) · [Architecture](#architecture) · [Standards baseline](#standards-baseline) · [Evidence](#evidence-and-acceptance-tests) · [Adopting it](#adopting-and-extending) · [Limitations](#limitations)
+[Quick start](#quick-start) · [The journey](#the-journey) · [Cross-border (v0.2)](#cross-border-v02) · [Architecture](#architecture) · [Standards baseline](#standards-baseline) · [Evidence](#evidence-and-acceptance-tests) · [Adopting it](#adopting-and-extending) · [Limitations](#limitations)
 
 ---
 
@@ -71,6 +71,21 @@ The UI walks one synthetic patient through ten steps, showing the artefact, vali
 
 Plus: **replacement** (v2 RPLC-replaces v1; v1 stays retrievable), **tamper simulations** (altered embedded IPS; appended bytes), and an **on-demand current summary** (`Patient/$summary`) that is explicitly distinct from issued snapshots.
 
+## Cross-border (v0.2)
+
+A second synthetic jurisdiction reads the summary. **Jurisdiction A** issues and preserves; **Jurisdiction B** (de-DE, its own patient index) is where a visiting patient is seen. B reaches A only through A's responding gateway, over HTTP:
+
+| Step | What happens | Evidence shown |
+|---|---|---|
+| B1 Discover | ITI-55 (XCPD): B sends demographics; A discloses its patient id only on an unambiguous exact match | HL7 V3 request/response; link B-id ↔ A-id; `NF` for a B-only resident |
+| B2 Query and retrieve | ITI-38 / ITI-39 (XCA): B asks for *everything*; A's gateway policy releases only the **current IPS** | Documents returned; six verification checks (hash, size, format, pre-flight, subject, status); simulated NCP pivot check |
+| B3 Render | B renders the received IPS in German from synthetic designations | Translation coverage; untranslated codes flagged in the rendition; free-text dosage passed through and reported |
+| B4 Preserve | B keeps a write-once custody copy: PDF/A-3b with the received IPS embedded and the German pages | Byte identity, all codes visible, PDF/A pre-flight |
+
+The PDF/A envelope never crosses the border - A's gateway refuses it - so the claim that *the preservation container is not the cross-border protocol* is enforced, not just stated. What B receives is byte-identical to the Associated File inside A's preserved envelope. See [ADR-007](adr/007-simulated-cross-border-exchange.md).
+
+> This is a simulation between synthetic jurisdictions. It is not MyHealth@EU, uses no real catalogue or transcoding service, and establishes no cross-border trust. Whether MyHealth@EU uses these IHE transactions or FHIR-based equivalents should be checked against current specifications before extending this layer.
+
 ## Architecture
 
 ```mermaid
@@ -88,6 +103,13 @@ flowchart LR
     REG & REPO --> MHD[MHD / sIPS façade<br/>ITI-67, ITI-68, $summary]
     MHD --> EHDS[EHDS export adapter<br/>preview only]
     UI[Demo UI] --> COMP
+    REG & REPO --> GW[A responding gateway<br/>XCPD ITI-55 · XCA ITI-38/39<br/>policy: current IPS only]
+  end
+  subgraph b["Jurisdiction B (simulated, de-DE)"]
+    IG[B initiating gateway] -- HTTP --> GW
+    IG --> VER[Verify received IPS]
+    VER --> LOC[Local rendition<br/>synthetic designations]
+    LOC --> CUST[(Custody copy<br/>PDF/A-3b)]
   end
 ```
 
@@ -101,6 +123,7 @@ Key decisions are recorded as ADRs in [`adr/`](adr/):
 | [004](adr/004-ehds-adapter-boundary.md) | EHDS specifics behind an export adapter, driven by a register in configuration |
 | [005](adr/005-python-implementation-stack.md) | Python stack - a recorded deviation from the Java reference design |
 | [006](adr/006-sqlite-metadata-store.md) | SQLite metadata and write-once filesystem repository |
+| [007](adr/007-simulated-cross-border-exchange.md) | Simulated cross-border exchange; gateway releases only the current IPS |
 
 More detail: [`docs/architecture.md`](docs/architecture.md).
 
@@ -114,7 +137,8 @@ More detail: [`docs/architecture.md`](docs/architecture.md).
 | FHIR document access | IHE MHD 4.2.4 | Trial Implementation | ITI-67, ITI-68 façade |
 | IPS sharing | IHE sIPS 1.0.0 | Trial Implementation | Direct IPS projection; on-demand `$summary` |
 | Preservation | PDF/A-3b (ISO 19005-3) | Published | Envelope with Associated File |
-| European exchange | EHDS Regulation (EU) 2025/327, EEHRxF, MyHealth@EU | In force; implementing acts continue | Non-normative preview and adapter boundary only |
+| Cross-community exchange | IHE XCPD (ITI-55), XCA (ITI-38, ITI-39) | Final Text | Demonstrator subsets between two synthetic jurisdictions (v0.2) |
+| European exchange | EHDS Regulation (EU) 2025/327, EEHRxF, MyHealth@EU | In force; implementing acts continue | Non-normative preview, simulated NCP pivot check, adapter boundary |
 
 See [`docs/standards-baseline.md`](docs/standards-baseline.md) for what is and is not implemented from each.
 
@@ -136,18 +160,20 @@ The demonstrator is meant to prove invariants, not just render screens. Each acc
 | AT-10 | Altered embedded IPS or appended bytes fail integrity checks | `pytest` |
 | AT-11 | EHDS preview separates demonstrated facts from unresolved requirements | `pytest` |
 | AT-12 | Clean clone, no secrets, starts with `docker compose up` | `pytest` (repository scan) + CI `docker` job |
+| XB-AT-01..09 | Cross-border: exact-match discovery, no disclosure on no-match, gateway releases only current IPS, envelope refused, received bytes identical to A's Associated File, superseded versions stay home, honest translation, write-once custody copy, simulated status in register | `pytest` (real gateway SOAP endpoints); custody PDF/A by veraPDF in CI |
 
-**Release status (v0.1.0).** All tests that do not need an external validator pass. The HL7 FHIR validator and veraPDF steps (AT-01 full, AT-05 full) are wired into CI but had **not yet been executed** when this release was prepared; the first CI run on GitHub is the first time they run. Treat their results, and any fixes they prompt, as part of verifying this release. CI uploads an evidence bundle (fixture artefacts, validator outcomes, SBOM) for every run.
+**Release status (v0.2.0).** All tests that do not need an external validator pass. The HL7 FHIR validator and veraPDF steps (AT-01 full, AT-05 full) are wired into CI but had **not yet been executed** when this release was prepared; the first CI run on GitHub is the first time they run. Treat their results, and any fixes they prompt, as part of verifying this release. CI uploads an evidence bundle (fixture artefacts, validator outcomes, SBOM) for every run.
 
 ## Repository layout
 
 ```
 ├── adr/                    architecture decision records
-├── config/                 affinity-domain policy, pinned standards, EHDS readiness register, IPS profile digest
+├── config/                 affinity-domain policy, pinned standards, EHDS register, IPS profile digest, crossborder/
 ├── docs/                   architecture, standards baseline, extending guide, API notes
 ├── fixtures/               synthetic patients and expected deterministic digests
 ├── scripts/                demo walkthrough, external validator runners, CI helpers
 ├── src/scdpoc/
+│   ├── crossborder/        v0.2: XCPD/XCA gateway (A), initiating gateway, localisation and custody (B)
 │   ├── ips/                composer, view model, validation
 │   ├── render/             deterministic HTML and PDF renditions
 │   ├── pdfa/               PDF/A-3b packaging, extraction, pre-flight, veraPDF
@@ -170,6 +196,9 @@ The demonstrator is meant to prove invariants, not just render screens. Each acc
 | `GET /fhir/DocumentReference` | ITI-67 (`patient.identifier`, `status`, `format`) |
 | `GET /fhir/Binary/{id}` | ITI-68 |
 | `GET /fhir/Patient/$summary?identifier=` | On-demand current IPS (tagged `on-demand`, never registered) |
+| `POST /gateway/xcpd` | Jurisdiction A responding gateway: ITI-55 Cross Gateway Patient Discovery (subset) |
+| `POST /gateway/xca` | Jurisdiction A responding gateway: ITI-38 Cross Gateway Query, ITI-39 Cross Gateway Retrieve (subset) |
+| `/api/demo/xb/*` | Jurisdiction B orchestration - non-normative |
 | `/api/demo/*` | Tutorial orchestration - convenient, **not** an interoperability specification |
 
 ## Adopting and extending

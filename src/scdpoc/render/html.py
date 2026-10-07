@@ -9,6 +9,7 @@ from __future__ import annotations
 from html import escape
 
 from ..ips.view import SummaryView
+from .labels import ENGLISH, Labels
 
 RENDERER_VERSION = "scdpoc-render-1"
 
@@ -27,15 +28,17 @@ footer{font:11px/1.4 ui-monospace,monospace;color:#555;margin-top:2rem;border-to
 """
 
 
-def render_html(view: SummaryView) -> str:
+def render_html(view: SummaryView, labels: Labels = ENGLISH,
+                extra_meta: list[tuple[str, str]] | None = None) -> str:
     rows = [
-        ("Patient", view.patient_name), ("Identifier", view.patient_id),
-        ("Date of birth", view.birth_date), ("Sex (administrative)", view.gender),
-        ("Issued", view.issued), ("Author", view.author), ("Custodian", view.custodian),
-        ("Document", view.document_id),
+        (labels.patient, view.patient_name), (labels.identifier, view.patient_id),
+        (labels.dob, view.birth_date), (labels.sex, view.gender),
+        (labels.issued, view.issued), (labels.author, view.author), (labels.custodian, view.custodian),
+        (labels.document, view.document_id),
     ]
     if view.replaces:
-        rows.append(("Replaces", view.replaces))
+        rows.append((labels.replaces, view.replaces))
+    rows += extra_meta or []
     meta = "".join(f"<dt>{escape(k)}</dt><dd>{escape(v)}</dd>" for k, v in rows)
     sections = []
     for s in view.sections:
@@ -46,9 +49,9 @@ def render_html(view: SummaryView) -> str:
             trs = "".join("<tr>" + "".join(f"<td>{escape(v)}</td>" for v in r) + "</tr>" for r in s.rows)
             body = f"<table><thead><tr>{head}</tr></thead><tbody>{trs}</tbody></table>"
         sections.append(f"<section><h2>{escape(s.title)}</h2>{body}</section>")
-    return (f'<!doctype html><html lang="{escape(view.language or "en")}"><head><meta charset="utf-8">'
+    footer = labels.rendered_by.format(renderer=RENDERER_VERSION)
+    return (f'<!doctype html><html lang="{escape(labels.lang)}"><head><meta charset="utf-8">'
             f"<title>{escape(view.title)} - {escape(view.patient_name)}</title><style>{_CSS}</style></head>"
-            f'<body><div class="banner">Synthetic data only - demonstrator, not for clinical use</div>'
+            f'<body><div class="banner">{escape(labels.banner)}</div>'
             f"<h1>{escape(view.title)}</h1><dl class=\"meta\">{meta}</dl>{''.join(sections)}"
-            f"<footer>Rendered by {RENDERER_VERSION} from FHIR IPS document {escape(view.document_id)}"
-            f"</footer></body></html>")
+            f"<footer>{escape(footer)} &middot; {escape(view.document_id)}</footer></body></html>")

@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.0 - 2026-10-07
+
+Simulated cross-border exchange (ADR-007).
+
+- Second synthetic jurisdiction (B, de-DE) with its own patient index and namespace (`2.999.2.1`).
+- Jurisdiction A responding gateway: ITI-55 XCPD (exact, unambiguous demographic match only) and ITI-38/39 XCA, with a home-community policy that releases only current IPS documents; the PDF/A envelope and superseded versions are refused.
+- Jurisdiction B initiating gateway, six-point verification of received documents, German rendition from synthetic designations with untranslated codes flagged and free text passed through, and a write-once PDF/A-3b custody copy.
+- `SimulatedNcpAdapter` pivot check against a synthetic agreed catalogue.
+- Renderers accept localised captions (`render/labels.py`); English output unchanged.
+- EHDS register: new `simulated` status; items XB-02, XB-03, TERM-05.
+- `build-fixtures` also emits localised custody envelopes so CI validates them with veraPDF.
+- Tests XB-AT-01..09; scripted demo extended.
+
 ## 0.1.0 - 2026-10-07
 
 First public demonstrator release.

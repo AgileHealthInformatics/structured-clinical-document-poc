@@ -25,6 +25,7 @@ from reportlab.platypus import KeepTogether, Paragraph, SimpleDocTemplate, Space
 
 from ..ips.view import SummaryView
 from .html import RENDERER_VERSION
+from .labels import ENGLISH, Labels
 
 _FONTS_REGISTERED = False
 
@@ -72,7 +73,8 @@ def _styles() -> dict[str, ParagraphStyle]:
     }
 
 
-def render_pdf(view: SummaryView, attachment_name: str) -> bytes:
+def render_pdf(view: SummaryView, attachment_name: str, labels: Labels = ENGLISH,
+               extra_meta: list[tuple[str, str]] | None = None) -> bytes:
     _register_fonts()
     rl_config.invariant = 1                    # fixed internal dates/ids -> reproducible bytes
     st = _styles()
@@ -82,11 +84,9 @@ def render_pdf(view: SummaryView, attachment_name: str) -> bytes:
         canvas.saveState()
         canvas.setFont("Vera", 7)
         canvas.setFillColor(MUTED)
-        canvas.drawString(18 * mm, 10 * mm, f"Document {view.document_id}")
-        canvas.drawRightString(A4[0] - 18 * mm, 10 * mm, f"Page {doc.page}")
-        canvas.drawString(18 * mm, 6.5 * mm,
-                          f"Rendered by {RENDERER_VERSION} from the embedded FHIR IPS Associated File "
-                          f"(AFRelationship=Source)")
+        canvas.drawString(18 * mm, 10 * mm, f"{labels.document} {view.document_id}")
+        canvas.drawRightString(A4[0] - 18 * mm, 10 * mm, f"{labels.page} {doc.page}")
+        canvas.drawString(18 * mm, 6.5 * mm, labels.rendered_by.format(renderer=RENDERER_VERSION))
         canvas.restoreState()
 
     doc = SimpleDocTemplate(buf, pagesize=A4, leftMargin=18 * mm, rightMargin=18 * mm, topMargin=16 * mm,
@@ -95,21 +95,22 @@ def render_pdf(view: SummaryView, attachment_name: str) -> bytes:
                             invariant=1)
     width = A4[0] - 36 * mm - 12   # frame has 6pt padding each side
     story = []
-    banner = Table([[Paragraph("SYNTHETIC DATA ONLY - DEMONSTRATOR, NOT FOR CLINICAL USE", st["banner"])]],
+    banner = Table([[Paragraph(escape(labels.banner), st["banner"])]],
                    colWidths=[width], hAlign="LEFT")
     banner.setStyle(TableStyle([_TABLE_FONT, ("BACKGROUND", (0, 0), (-1, -1), BANNER),
                                 ("LEFTPADDING", (0, 0), (-1, -1), 6), ("TOPPADDING", (0, 0), (-1, -1), 3),
                                 ("BOTTOMPADDING", (0, 0), (-1, -1), 4)]))
     story += [banner, Spacer(1, 6 * mm), Paragraph(escape(view.title), st["title"]), Spacer(1, 3 * mm)]
 
-    meta = [("Patient", view.patient_name), ("Identifier", view.patient_id), ("Date of birth", view.birth_date),
-            ("Sex (administrative)", view.gender), ("Issued", view.issued), ("Author", view.author),
-            ("Custodian", view.custodian), ("Document", view.document_id)]
+    meta = [(labels.patient, view.patient_name), (labels.identifier, view.patient_id), (labels.dob, view.birth_date),
+            (labels.sex, view.gender), (labels.issued, view.issued), (labels.author, view.author),
+            (labels.custodian, view.custodian), (labels.document, view.document_id)]
     if view.replaces:
-        meta.append(("Replaces", view.replaces))
-    meta.append(("Structured source", f"{attachment_name} (embedded, AFRelationship=Source)"))
+        meta.append((labels.replaces, view.replaces))
+    meta += extra_meta or []
+    meta.append((labels.structured_source, f"{attachment_name} (embedded, AFRelationship=Source)"))
     mt = Table([[Paragraph(escape(k), st["head"]), Paragraph(escape(v), st["cell"])] for k, v in meta],
-               colWidths=[38 * mm, width - 38 * mm], hAlign="LEFT")
+               colWidths=[44 * mm, width - 44 * mm], hAlign="LEFT")
     mt.setStyle(TableStyle([_TABLE_FONT, ("VALIGN", (0, 0), (-1, -1), "TOP"), ("BOTTOMPADDING", (0, 0), (-1, -1), 1),
                             ("TOPPADDING", (0, 0), (-1, -1), 1), ("LEFTPADDING", (0, 0), (-1, -1), 0)]))
     story += [mt, Spacer(1, 2 * mm)]

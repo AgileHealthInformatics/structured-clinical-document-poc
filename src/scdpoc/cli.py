@@ -42,6 +42,13 @@ def _build_fixtures(args) -> None:
                              subject=f"International Patient Summary for {view.patient_name}")
         (out / f"{f['key']}.ips.json").write_bytes(d.json_bytes)
         (out / f"{f['key']}.pdf").write_bytes(env.pdf_bytes)
+        # v0.2: consumer-side (Jurisdiction B) custody envelope, so CI also validates a localised PDF/A
+        from .crossborder.translate import localise
+        lview, _, labels = localise(d.bundle, s.designations)
+        cenv = build_envelope(render_pdf(lview, attachment_name_for(str(doc_id)), labels), d.json_bytes,
+                              document_id=str(doc_id), issued=issued, title=lview.title, author="Jurisdiction B",
+                              subject="custody copy")
+        (out / f"{f['key']}.custody-{labels.lang}.pdf").write_bytes(cenv.pdf_bytes)
         print(f"{f['key']}: preflight={'pass' if rep.engines[0].status == 'passed' else 'FAIL'} "
               f"pdf_sha256={env.pdf_sha256}")
         failed |= rep.engines[0].status != "passed"

@@ -135,4 +135,46 @@ class MyHealthEuAdapter:
             "requirements; see docs/extending.md.")
 
 
-ADAPTERS = {"preview": ReadinessPreviewAdapter}
+class SimulatedNcpAdapter:
+    """Simulated National Contact Point (country of affiliation) pivot check - v0.2.
+
+    Runs over the IPS that Jurisdiction A's gateway will release. It does not
+    transform the document: the FHIR IPS *is* the pivot in this simulation. It
+    checks that every clinical code is in the synthetic agreed catalogue
+    (config/crossborder/catalogue.yml) and reports the result. It is not
+    MyHealth@EU, uses no real catalogue, and establishes no cross-border trust.
+    """
+
+    name = "simulated-ncp-a"
+
+    def __init__(self, settings: Settings):
+        self.catalogue = settings.catalogue
+
+    def export(self, ips_bytes: bytes) -> ExportResult:
+        bundle = json.loads(ips_bytes)
+        systems = self.catalogue["systems"]
+        res = ExportResult(self.name, normative=False, register_version=self.catalogue["meta"]["version"],
+                           disclaimer="Simulated NCP pivot check against a synthetic catalogue. Not MyHealth@EU; "
+                                      "no real catalogue, transcoding service or trust framework is involved.")
+        n = 0
+        for e in bundle.get("entry", [])[1:]:
+            r = e["resource"]
+            for key in ("code", "medicationCodeableConcept", "vaccineCode"):
+                for c in (r.get(key) or {}).get("coding", []):
+                    if c.get("system") not in systems:
+                        continue
+                    n += 1
+                    ok = c.get("code") in systems[c["system"]]
+                    res.items.append(ItemResult(
+                        id=f"CAT-{n:02d}", area="Catalogue", requirement=f"{r['resourceType']}.{key} in agreed catalogue",
+                        status="demonstrated" if ok else "gap",
+                        evidence=f"{c['system']}|{c.get('code')} ({c.get('display', '')})"
+                                 + ("" if ok else " - not in agreed catalogue")))
+        res.items.append(ItemResult(id="PIVOT-01", area="Format", requirement="Pivot document released unchanged",
+                                    status="demonstrated",
+                                    evidence="FHIR IPS bytes released as issued; no transformation in this simulation"))
+        res.payload = {"pivotBytes": len(ips_bytes)}
+        return res
+
+
+ADAPTERS = {"preview": ReadinessPreviewAdapter, "simulated-ncp-a": SimulatedNcpAdapter}

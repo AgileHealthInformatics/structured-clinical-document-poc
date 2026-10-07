@@ -37,6 +37,13 @@ To persist metadata in PostgreSQL instead of SQLite, implement the `RegistryStor
 
 Implement `ExportAdapter.export(ips_bytes) -> ExportResult` for the adopted EEHRxF specification and your NCPeH's requirements (`MyHealthEuAdapter` marks the spot). Keep the readiness register under change control and update it when implementing acts or national rules change.
 
+### 7. Cross-border (`crossborder/`)
+
+- The responding gateway's release policy is configuration (`config/crossborder/communities.yml`). Keep the envelope out of the exposed format codes.
+- Replace `find_match` with your master patient index and matching rules; keep "disclose nothing on ambiguity".
+- Replace `config/crossborder/designations-*.yml` and `catalogue.yml` with mandated catalogues and a transcoding/terminology service; free text must stay flagged, never machine-translated silently.
+- If MyHealth@EU's target is FHIR-based, implement the same B1-B4 behaviour over FHIR (for example PDQm and MHD across a gateway) and run the XB acceptance tests against it.
+
 ## Production gaps you must close
 
 Identity (patient and professional), authentication and authorisation (e.g. IUA/OAuth, mutual TLS), consent and EHDS access rights, ATNA-grade audit, terminology licensing and services, signatures/seals, clinical safety case, retention and records-management law, cross-border trust, availability, performance and disaster recovery.

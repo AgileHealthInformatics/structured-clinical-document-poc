@@ -34,6 +34,10 @@ Installed as dependencies, not vendored. Versions tested are pinned in `requirem
 - IHE profile names, transaction identifiers and metadata UUIDs are used as interoperability identifiers. IHE technical frameworks are not reproduced.
 - Clinical codes (SNOMED CT, LOINC, WHO ATC) appear only as individual identifiers in synthetic fixtures. No terminology release files are distributed. Use of these code systems in a real service requires the appropriate licences.
 
+## Synthetic cross-border content (v0.2)
+
+`config/crossborder/catalogue.yml` and `config/crossborder/designations-de-DE.yml` are illustrative, hand-written synthetic content. They are not an official catalogue, translation or national terminology release.
+
 ## Synthetic data
 
 All patients, organisations and identifiers in `fixtures/` are fictional. Identifiers use the `2.999` example OID arc. Any resemblance to real persons is coincidental.

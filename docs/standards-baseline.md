@@ -42,6 +42,16 @@ Not implemented
 - IPS available as its own DocumentEntry/DocumentReference with format code `urn:ihe:pcc:ips:2020` and `application/fhir+json`.
 - On-demand current summary through `Patient/$summary` (the IPS IG operation), tagged and never registered.
 
+## IHE XCPD (ITI-55) and XCA (ITI-38, ITI-39) - v0.2
+
+Implemented
+- ITI-55 synchronous query by demographics (PRPA_IN201305UV02 → PRPA_IN201306UV02): living subject name, birth time, administrative gender, requester's local id; `OK` with one patient and custodian community, or `NF`.
+- ITI-38 FindDocuments and GetDocuments with `home` on returned objects; ITI-39 with `HomeCommunityId`, MTOM response.
+- Home-community policy: only current documents with the IPS format code cross the gateway.
+
+Not implemented
+- XCPD deferred mode, revoke, health data locator, probabilistic matching; XCA asynchronous mode; on-demand documents across the gateway; TLS, SAML/IUA assertions, purpose of use; consent-gated discovery.
+
 ## PDF/A-3b (ISO 19005-3)
 
 Implemented
@@ -55,5 +65,6 @@ Evidence
 ## EHDS (Regulation (EU) 2025/327), EEHRxF, MyHealth@EU
 
 - Non-normative readiness register (`config/ehds-readiness.yml`) evaluated against the IPS projection.
-- No EEHRxF profile, no NCPeH connectivity, no cross-border identity or trust.
+- v0.2: simulated cross-border exchange between two synthetic jurisdictions (`simulated` status), with a simulated NCP pivot check against a synthetic catalogue.
+- No EEHRxF profile, no NCPeH connectivity, no real cross-border identity or trust.
 - The eHealth Network Patient Summary guideline and EHDS implementing acts must be consulted directly by adopters; the register records where the PoC's position depends on them.

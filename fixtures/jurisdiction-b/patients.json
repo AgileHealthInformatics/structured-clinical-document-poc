@@ -1,0 +1,14 @@
+{
+  "synthetic": true,
+  "note": "Jurisdiction B's local patient index. Same synthetic people as Jurisdiction A, with B's own identifiers; one person (SYNB-2099) has never been treated in Jurisdiction A.",
+  "patients": [
+    { "key": "b-okafor",  "identifier": "SYNB-2001", "family": "Okafor",  "given": ["Amara"], "gender": "female", "birthDate": "1971-03-14",
+      "scenario": "Visiting Jurisdiction B; summary issued in A." },
+    { "key": "b-brenner", "identifier": "SYNB-2002", "family": "Brenner", "given": ["Lukas"], "gender": "male",   "birthDate": "1994-09-02",
+      "scenario": "Asthma review while working in B." },
+    { "key": "b-duarte",  "identifier": "SYNB-2003", "family": "Duarte",  "given": ["Ines", "Maria"], "gender": "female", "birthDate": "1948-11-23",
+      "scenario": "Unscheduled care in B; anticoagulated." },
+    { "key": "b-keller",  "identifier": "SYNB-2099", "family": "Keller",  "given": ["Jonas"], "gender": "male",   "birthDate": "1982-05-30",
+      "scenario": "Resident of B only - XCPD should find no match in A." }
+  ]
+}

@@ -1,0 +1,26 @@
+# Simulated cross-border topology (v0.2). Both communities run in one process
+# for the demonstrator but talk to each other only over HTTP, through IHE
+# cross-community transactions. All identifiers use the 2.999 example arc.
+
+home:                     # Jurisdiction A - where the summary is issued and preserved
+  name: "Jurisdiction A (synthetic)"
+  home_community_id: "urn:oid:2.999.1.9"
+  device_oid: "2.999.1.10"
+  language: "en-GB"
+  gateway_path: "/gateway"          # responding gateway endpoints are mounted here
+
+consumer:                 # Jurisdiction B - where a clinician reads the summary
+  name: "Jurisdiction B (synthetic)"
+  home_community_id: "urn:oid:2.999.2.9"
+  device_oid: "2.999.2.10"
+  language: "de-DE"
+  patient_assigning_authority:
+    oid: "2.999.2.1"
+    value_prefix: "SYNB-"
+
+# Home-community policy enforced by Jurisdiction A's responding gateway.
+# The preservation envelope is never offered across the border: only the
+# computable IPS (the pivot) is. This is the PoC's core claim made enforceable.
+gateway_policy:
+  exposed_format_codes: ["urn:ihe:pcc:ips:2020"]
+  exposed_statuses: ["urn:oasis:names:tc:ebxml-regrep:StatusType:Approved"]

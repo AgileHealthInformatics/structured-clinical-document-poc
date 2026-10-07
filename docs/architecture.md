@@ -47,6 +47,25 @@ sequenceDiagram
   D-->>UI: equivalence + integrity checks IC-1..IC-7
 ```
 
+## Cross-border sequence (v0.2)
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant B as Jurisdiction B (initiating gateway)
+  participant G as Jurisdiction A responding gateway
+  participant R as A registry / repository
+  B->>G: ITI-55 demographics + B local id
+  G-->>B: OK + A patient id (only if exactly one candidate) / NF
+  B->>G: ITI-38 FindDocuments (all formats, current + superseded)
+  G->>R: registry query
+  G-->>B: current IPS DocumentEntries only (home = A)
+  B->>G: ITI-39 retrieve IPS
+  G->>R: repository retrieve
+  G-->>B: application/fhir+json (byte-identical to A's Associated File)
+  Note over B: verify VB-1..6, render de-DE, preserve custody copy (CB-1..3)
+```
+
 ## Integrity checks
 
 Each retrieval (and each tamper simulation) is checked against the record made at issuance:
@@ -79,4 +98,7 @@ $SCDPOC_DATA_DIR/
     ├── drafts/<id>/      ips.json + record.json (validation evidence)
     ├── packages/<id>/    envelope.pdf, verapdf-report.xml, record.json, publication.json
     └── patients/<key>/   issuances.json, state.json
+└── jurisdiction-b/
+    ├── patients/<key>/   state.json (XCPD link, received documents)
+    └── received/<uid>/   ips.json (as received), record.json, custody.pdf, custody.json
 ```

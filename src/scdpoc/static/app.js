@@ -2,8 +2,9 @@
 "use strict";
 
 const STEPS = ["Patient", "Compose IPS", "Validate", "Render", "Package", "PDF/A validation",
-  "Publish (XDS)", "Discover & retrieve", "Exchange projection", "EHDS preview", "Replace & tamper"];
+  "Publish (XDS)", "Discover & retrieve", "Exchange projection", "EHDS preview", "Cross-border (B)", "Replace & tamper"];
 const S = { key: null, patient: null, draft: null, pkg: null, pub: null };
+const SB = { key: null };
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -54,7 +55,7 @@ async function busy(btn, fn) {
 
 /* ------------------------------------------------------------------ init */
 async function init() {
-  $("#rail").innerHTML = STEPS.map((s, i) => `<li data-step="${i + 1}">${i + 1 < 11 ? i + 1 + ". " : "+ "}${h(s)}</li>`).join("");
+  $("#rail").innerHTML = STEPS.map((s, i) => `<li data-step="${i + 1}">${i < 10 ? i + 1 + ". " : i === 10 ? "XB " : "+ "}${h(s)}</li>`).join("");
   $$("#rail li").forEach((li) => li.addEventListener("click", () => $(`#s${li.dataset.step}`).scrollIntoView({ behavior: "smooth", block: "start" })));
   const info = await api("GET", "/api/info");
   $("#version").textContent = `v${info.version}`;
@@ -65,6 +66,7 @@ async function init() {
     ["IPS package", `<code>${h(info.standards.ips.package)}#${h(info.standards.ips.version)}</code>`],
   ].map(([k, d]) => `<div><dt>${h(k)}</dt><dd>${d}</dd></div>`).join("");
   await loadPatients();
+  await loadBPatients();
   $$("[data-act]").forEach((b) => b.addEventListener("click", () => ACTIONS[b.dataset.act](b)));
   $("#run-all").addEventListener("click", (e) => runAll(e.currentTarget));
 }
@@ -78,13 +80,13 @@ async function loadPatients() {
       ${p.issuedVersions ? chip(`issued v${p.currentVersion}`, "info") : chip("not yet issued", "muted")}
       ${p.hasRevision ? chip("has revision scenario", "muted") : ""}
     </button>`).join("");
-  $$(".patient").forEach((b) => b.addEventListener("click", () => selectPatient(b.dataset.key)));
+  $$("#patients .patient").forEach((b) => b.addEventListener("click", () => selectPatient(b.dataset.key)));
 }
 
 async function selectPatient(key) {
   S.key = key; S.draft = S.pkg = S.pub = null;
-  $$(".patient").forEach((b) => b.setAttribute("aria-pressed", b.dataset.key === key));
-  for (let i = 2; i <= 11; i++) { $(`#o${i}`).innerHTML = ""; mark(i, null); }
+  $$("#patients .patient").forEach((b) => b.setAttribute("aria-pressed", b.dataset.key === key));
+  for (const i of [2, 3, 4, 5, 6, 7, 8, 9, 10, 12]) { $(`#o${i}`).innerHTML = ""; mark(i, null); }
   const p = await api("GET", `/api/demo/patients/${key}`);
   S.patient = p;
   const src = p.source;
@@ -243,7 +245,7 @@ async function discover(btn) {
 async function ehds(btn) {
   const e = await busy(btn, () => api("GET", `/api/demo/ehds-preview/${S.key}`));
   if (!e) return null;
-  const kind = { "demonstrated": "ok", "gap": "bad", "optional-absent": "muted", "unresolved": "warn", "out-of-scope": "info" };
+  const kind = { "simulated": "info", "demonstrated": "ok", "gap": "bad", "optional-absent": "muted", "unresolved": "warn", "out-of-scope": "info" };
   $("#o10").innerHTML = `
     <div class="callout warn"><strong>Non-normative.</strong> ${h(e.disclaimer)}</div>
     ${kv([["Document", `<code>${h(e.documentUrn)}</code>`], ["Input", h(e.source)], ["Register", `<code>config/ehds-readiness.yml</code> v${h(e.register_version)}`], ["Summary", Object.entries(e.summary).map(([k, n]) => chip(`${n} ${k}`, kind[k] || "muted")).join(" ")]])}
@@ -260,14 +262,14 @@ async function replace(btn) {
   if (!p || !p.publishable) return;
   await publish(null);
   toast(`Version ${d.version} issued; previous version deprecated, still retrievable.`);
-  $("#s11").scrollIntoView({ behavior: "smooth", block: "start" });
+  $("#s12").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 async function tamper(btn, mode) {
   const t = await busy(btn, () => api("POST", `/api/demo/tamper/${S.key}?mode=${mode}`));
   if (!t) return;
   const failed = t.tampered.checks.filter((c) => !c.passed);
-  $("#o11").innerHTML = `
+  $("#o12").innerHTML = `
     <div class="callout ${t.tampered.passed ? "bad" : "ok"}"><strong>${t.tampered.passed ? "Tampering NOT detected" : `Tampering detected by ${failed.length} check(s)`}.</strong> ${h(t.tampering)}. ${h(t.note)}</div>
     <div class="scroll"><table class="t"><thead><tr><th>Tampered copy</th><th>Stored original</th><th>Check</th><th>Actual (tampered)</th></tr></thead><tbody>
       ${t.tampered.checks.map((c, n) => `<tr><td>${okChip(c.passed)}</td><td>${okChip(t.storedOriginal.checks[n]?.passed)}</td><td>${h(c.id)} ${h(c.label)}</td><td class="hash">${h(short(c.actual, 16))}</td></tr>`).join("")}</tbody></table></div>
@@ -281,7 +283,7 @@ async function ondemand(btn) {
   const url = `/fhir/Patient/$summary?identifier=${encodeURIComponent(sys + "|" + id)}`;
   const b = await busy(btn, () => api("GET", url));
   if (!b) return;
-  $("#o11").innerHTML = `
+  $("#o12").innerHTML = `
     <div class="callout warn"><strong>On-demand, not preserved.</strong> A fresh IPS composed now from current source data (new identifier <code>${h(b.identifier.value)}</code>, timestamp ${h(b.timestamp)}). It is tagged <code>${h(b.meta.tag[0].code)}</code>, is not registered, and must not be confused with the immutable issued snapshots below.</div>
     ${pre(`GET ${url}`, JSON.stringify(b, null, 2))}<div id="history"></div>`;
   await renderHistory();
@@ -291,7 +293,7 @@ async function renderHistory() {
   if (!S.key) return;
   const hst = await api("GET", `/api/demo/history/${S.key}`);
   let host = $("#history");
-  if (!host) { $("#o11").insertAdjacentHTML("beforeend", `<div id="history"></div>`); host = $("#history"); }
+  if (!host) { $("#o12").insertAdjacentHTML("beforeend", `<div id="history"></div>`); host = $("#history"); }
   host.innerHTML = `<h3>Issued versions</h3><ul class="timeline">${hst.issuances.slice().reverse().map((i) => `
     <li><span class="v">v${h(i.version)}</span><div>
       ${chip(`envelope ${i.envelopeStatus}`, i.envelopeStatus === "Approved" ? "ok" : "muted")} ${chip(`IPS ${i.ipsStatus}`, i.ipsStatus === "Approved" ? "ok" : "muted")}
@@ -311,7 +313,117 @@ function assocLabel(i) {
   };
 }
 
+/* ------------------------------------------------- cross-border (Jurisdiction B) */
+const checkRows = (checks) => `<div class="scroll"><table class="t"><tbody>${checks.map((c) => `<tr><td>${okChip(c.passed)}</td><td>${h(c.id)} ${h(c.label)}${c.detail ? ` <span style="color:var(--muted)">${h(c.detail)}</span>` : ""}</td><td class="hash">${h(short(c.actual || "", 16))}</td></tr>`).join("")}</tbody></table></div>`;
+
+async function loadBPatients() {
+  const pts = await api("GET", "/api/demo/xb/patients");
+  $("#bpatients").innerHTML = pts.map((p) => `
+    <button class="patient" data-bkey="${h(p.key)}" aria-pressed="${p.key === SB.key}">
+      <strong>${h(p.name)}</strong><span class="pid">${h(p.identifier)} · born ${h(p.birthDate)}</span>
+      <p>${h(p.scenario)}</p>
+      ${p.link ? chip(`linked to ${p.link.remoteId}`, "info") : chip("not yet discovered", "muted")}
+      ${p.received ? chip(`${p.received} received`, "ok") : ""}
+    </button>`).join("");
+  $$("#bpatients .patient").forEach((b) => b.addEventListener("click", () => selectB(b.dataset.bkey)));
+}
+
+function selectB(key) {
+  SB.key = key;
+  $$("#bpatients .patient").forEach((b) => b.setAttribute("aria-pressed", b.dataset.bkey === key));
+  $("#o11").innerHTML = `<div id="xb-disc"></div><div id="xb-ex"></div><div id="xb-render"></div><div id="xb-pres"></div>`;
+  mark(11, null);
+  enable(["xb-all", "xb-discover"]);
+  enable(["xb-exchange", "xb-render", "xb-preserve"], false);
+}
+
+async function xbDiscover(btn) {
+  const r = await busy(btn, () => api("POST", `/api/demo/xb/discover/${SB.key}`));
+  if (!r) return null;
+  const ok = r.result.queryResponseCode === "OK";
+  $("#xb-disc").innerHTML = `<h3>B1 · Patient discovery (ITI-55, XCPD)</h3>
+    <div class="callout ${ok ? "ok" : "warn"}"><strong>${ok ? "Match in Jurisdiction A" : "No match in Jurisdiction A"}.</strong>
+    ${ok ? `B's <code>${h(r.link.localId)}</code> is linked to A's <code>${h(r.link.remoteId)}</code> (community <code>${h(r.link.homeCommunityId)}</code>). Only an unambiguous exact demographic match is disclosed.` : "Jurisdiction A disclosed no identity (queryResponseCode NF). Nothing further can be requested."}</div>
+    ${kv([["Sent", "family name, given name, birth date, administrative gender, B's local id"], ["Response code", `<code>${h(r.result.queryResponseCode)}</code>`]])}
+    ${pre("ITI-55 request (PRPA_IN201305UV02)", r.exchange.request_xml)}${pre("ITI-55 response (PRPA_IN201306UV02)", r.exchange.response_xml)}`;
+  enable(["xb-exchange"], ok);
+  if (!ok) mark(11, null);
+  loadBPatients();
+  return r;
+}
+
+async function xbExchange(btn) {
+  const r = await busy(btn, () => api("POST", `/api/demo/xb/exchange/${SB.key}`));
+  if (!r) return null;
+  if (!r.documents.length) {
+    $("#xb-ex").innerHTML = `<h3>B2 · Cross-gateway query and retrieve</h3><div class="callout warn">${h(r.message)}</div>${pre("ITI-38 response", r.query.response_xml)}`;
+    return null;
+  }
+  const ncp = r.ncpPivotCheck;
+  const pass = r.verification.every((c) => c.passed);
+  $("#xb-ex").innerHTML = `<h3>B2 · Cross-gateway query and retrieve (ITI-38 / ITI-39, XCA)</h3>
+    <div class="callout">B asked for <strong>${h(r.requested)}</strong>. Jurisdiction A's gateway returned <strong>${r.documents.length}</strong> document(s), all current IPS - the PDF/A envelope and superseded versions stay in the home community.</div>
+    <div class="scroll"><table class="t"><thead><tr><th>Status</th><th>MIME</th><th>formatCode</th><th>home</th></tr></thead><tbody>
+      ${r.documents.map((d) => `<tr><td>${chip(d.status, "ok")}</td><td>${h(d.mimeType)}</td><td><code>${h(d.formatCode)}</code></td><td><code>${h(d.home)}</code></td></tr>`).join("")}</tbody></table></div>
+    <h3>Verification by Jurisdiction B</h3>
+    <div class="callout ${pass ? "ok" : "bad"}"><strong>${pass ? "Received IPS verified" : "Verification failed"}.</strong> ${h(r.received.bytes)} bytes · SHA-256 <span class="hash">${h(r.received.sha256)}</span></div>
+    ${checkRows(r.verification)}
+    <h3>Simulated NCP-A pivot check (synthetic catalogue)</h3>
+    <p style="font-size:13px;color:var(--muted)">${h(ncp.disclaimer)}</p>
+    ${kv([["Summary", Object.entries(ncp.summary).map(([k, n]) => chip(`${n} ${k}`, k === "demonstrated" ? "ok" : "bad")).join(" ")]])}
+    ${pre("ITI-38 request", r.query.request_xml)}${pre("ITI-38 response", r.query.response_xml)}${pre("ITI-39 response (MTOM root part)", r.retrieve.response_xml)}`;
+  enable(["xb-render", "xb-preserve"], pass);
+  loadBPatients();
+  return r;
+}
+
+async function xbRender(btn) {
+  const r = await busy(btn, () => api("GET", `/api/demo/xb/render/${SB.key}`));
+  if (!r) return null;
+  const t = r.translation;
+  $("#xb-render").innerHTML = `<h3>B3 · Rendition for a clinician in Jurisdiction B (${h(r.language)})</h3>
+    <div class="callout">${h(r.note)}</div>
+    ${kv([["Codes translated", `${t.translated.length} of ${t.translated.length + t.untranslated.length} (${Math.round(t.coverage * 100)}%)`],
+          ["Untranslated (shown in original, flagged)", t.untranslated.length ? t.untranslated.map((u) => `<code>${h(u.code)}</code> ${h(u.original)}`).join("<br>") : "none"],
+          ["Free text passed through unchanged", t.free_text_passed_through.length ? t.free_text_passed_through.map((f) => h(f.text)).join("<br>") : "none"]])}
+    <div class="links"><a href="/api/demo/xb/render/${h(SB.key)}/summary.html" target="_blank" rel="noopener">Open in new tab</a></div>
+    <iframe class="frame" title="Jurisdiction B rendition" sandbox src="/api/demo/xb/render/${h(SB.key)}/summary.html"></iframe>`;
+  return r;
+}
+
+async function xbPreserve(btn) {
+  const r = await busy(btn, () => api("POST", `/api/demo/xb/preserve/${SB.key}`));
+  if (!r) return null;
+  const pass = r.checks.every((c) => c.passed);
+  $("#xb-pres").innerHTML = `<h3>B4 · Custody copy held by Jurisdiction B</h3>
+    <div class="callout ${pass ? "ok" : "bad"}">${h(r.note)}</div>
+    ${kv([["Envelope", `${h(r.bytes)} bytes · SHA-256 <span class="hash">${h(r.envelopeSha256)}</span>`], ["Language", h(r.language)]])}
+    ${checkRows(r.checks)}
+    <div class="links"><a href="/api/demo/xb/preserve/${h(SB.key)}/custody.pdf" target="_blank" rel="noopener">Open custody copy (PDF/A-3b)</a></div>`;
+  mark(11, pass ? "done" : "failed");
+  return r;
+}
+
+async function xbAll(btn) {
+  if (!SB.key) return;
+  btn.classList.add("busy"); btn.disabled = true;
+  try {
+    const d = await xbDiscover(null);
+    if (!d || d.result.queryResponseCode !== "OK") return;
+    const e = await xbExchange(null);
+    if (!e) return;
+    await xbRender(null);
+    await xbPreserve(null);
+    toast("Cross-border exchange complete.");
+  } finally { btn.classList.remove("busy"); btn.disabled = false; }
+}
+
 const ACTIONS = {
+  "xb-all": (b) => xbAll(b),
+  "xb-discover": (b) => xbDiscover(b),
+  "xb-exchange": (b) => xbExchange(b),
+  "xb-render": (b) => xbRender(b),
+  "xb-preserve": (b) => xbPreserve(b),
   compose: (b) => compose(b),
   package: (b) => pkg(b),
   publish: (b) => publish(b),

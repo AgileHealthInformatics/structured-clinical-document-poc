@@ -7,15 +7,15 @@
   "fixtures": {
     "amara-okafor": {
       "ips_sha256": "aaad177bb42d937061db78af6751e1b914a62cfd65caaccdec9e8a0cf80f970f",
-      "pdf_sha256_informative": "21ea09af54f559ed9f05aa3b7af547873b8d9bebf1e918d9b099665ab3ab7b17"
+      "pdf_sha256_informative": "f5bd030050e277442db323c4a6c60365e9c558c49a69594af93d812dfb3b27b9"
     },
     "ines-duarte": {
       "ips_sha256": "446388baa59cbcd1709fce5a8380754985e397345601dc3d1b5bc3608c30e767",
-      "pdf_sha256_informative": "0e7069af0b80e16cda22f1bc931fdeec2b1a1a096ea9844ee0c72c1155782822"
+      "pdf_sha256_informative": "2fd71618c1823da078e125a891e5fb06e0533325925c8749df993b9a02fd9ade"
     },
     "lukas-brenner": {
       "ips_sha256": "b9b6d8d367bc757fb00e09956411c8f6e0489502b67f10ce1d29f2650152cf79",
-      "pdf_sha256_informative": "471cefe233bff78456ac8828fd46af422d1820bebc62b28fb0ce79981cd95c37"
+      "pdf_sha256_informative": "9231caccb99123d8b6ce287a821856d0807e757184515a40a83e97b51e6440ac"
     }
   }
 }

@@ -76,6 +76,8 @@ h1 em { font-style: italic; color: var(--accent); font-weight: 500; }
 .journey { display: flex; flex-direction: column; gap: 1.1rem; min-width: 0; }
 .step { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 1.25rem 1.35rem; min-width: 0; }
 .step > header { display: flex; gap: .95rem; align-items: flex-start; }
+.step.xb { border-color: color-mix(in srgb, var(--info) 35%, var(--rule)); }
+.step.xb .num { font-size: 11px; }
 .step .num { flex: none; width: 2rem; height: 2rem; border-radius: 50%; border: 1px solid var(--rule-strong); display: grid; place-items: center; font: 600 14px/1 var(--serif); color: var(--muted); }
 .step.done .num { background: var(--ok); color: #fff; border-color: var(--ok); }
 .step.failed .num { background: var(--bad); color: #fff; border-color: var(--bad); }

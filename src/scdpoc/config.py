@@ -74,3 +74,25 @@ class Settings:
     @cached_property
     def ehds_register(self) -> dict[str, Any]:
         return yaml.safe_load((self.config_dir / "ehds-readiness.yml").read_text(encoding="utf-8"))
+
+    # ---------------------------------------------------------- cross-border (v0.2)
+    @property
+    def crossborder_dir(self) -> Path:
+        return self.config_dir / "crossborder"
+
+    @cached_property
+    def communities(self) -> dict[str, Any]:
+        return yaml.safe_load((self.crossborder_dir / "communities.yml").read_text(encoding="utf-8"))
+
+    @cached_property
+    def catalogue(self) -> dict[str, Any]:
+        return yaml.safe_load((self.crossborder_dir / "catalogue.yml").read_text(encoding="utf-8"))
+
+    @cached_property
+    def designations(self) -> dict[str, Any]:
+        lang = self.communities["consumer"]["language"]
+        return yaml.safe_load((self.crossborder_dir / f"designations-{lang}.yml").read_text(encoding="utf-8"))
+
+    @property
+    def jurisdiction_b_patients_file(self) -> Path:
+        return self.home / "fixtures" / "jurisdiction-b" / "patients.json"

@@ -11,12 +11,13 @@
 #   optional-absent - optional content not present in this document
 #   unresolved      - depends on requirements not yet settled or not modelled here
 #   out-of-scope    - deliberately excluded from the demonstrator
+#   simulated       - exercised end-to-end between synthetic jurisdictions (v0.2), not with real infrastructure
 #
 # Review this register whenever EHDS implementing acts, the eHealth Network
 # Patient Summary guideline, or the pinned IPS version change.
 
 meta:
-  register_version: "0.1.0"
+  register_version: "0.2.0"
   reviewed: "2026-10-07"
   disclaimer: >-
     Non-normative demonstrator output. This is not an EHDS, EEHRxF, MyHealth@EU
@@ -95,7 +96,31 @@ items:
     area: Cross-border
     requirement: MyHealth@EU / NCPeH transport, trust and onboarding
     status: out-of-scope
-    note: No connection to any real National Contact Point. The adapter boundary (ehds/adapter.py) is where this would be implemented.
+    note: >-
+      No connection to any real National Contact Point. v0.2 simulates the exchange pattern between two
+      synthetic jurisdictions (XB-02); a real NCPeH integration would be implemented behind ehds/adapter.py.
+  - id: XB-02
+    area: Cross-border
+    requirement: Cross-community patient discovery and Patient Summary retrieval
+    status: simulated
+    note: >-
+      ITI-55 (XCPD) and ITI-38/39 (XCA) subsets between Jurisdiction A's responding gateway and Jurisdiction B,
+      over HTTP. Whether MyHealth@EU uses these transactions or FHIR-based equivalents must be checked
+      against current MyHealth@EU specifications.
+  - id: XB-03
+    area: Cross-border
+    requirement: Preservation container is not the cross-border protocol
+    status: simulated
+    note: >-
+      Jurisdiction A's gateway policy releases only current IPS documents (format code urn:ihe:pcc:ips:2020);
+      requests for the PDF/A envelope are refused.
+  - id: TERM-05
+    area: Terminology
+    requirement: Consumer-side rendition in the reader's language
+    status: simulated
+    note: >-
+      Jurisdiction B renders from the received IPS with synthetic de-DE designations, flags untranslated codes
+      and passes free text through unchanged. Not an official translation or transcoding service.
   - id: ID-01
     area: Identity
     requirement: Cross-border patient identification and matching

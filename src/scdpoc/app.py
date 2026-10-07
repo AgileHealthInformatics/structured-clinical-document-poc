@@ -9,6 +9,9 @@ from fastapi.staticfiles import StaticFiles
 
 from . import __version__
 from .config import Settings
+from .crossborder.api import build_router as xb_router
+from .crossborder.gateway import build_router as gateway_router
+from .crossborder.service import JurisdictionB
 from .demo.api import build_router as demo_router
 from .demo.http import Http, HttpxTransport
 from .demo.service import DemoService
@@ -51,6 +54,11 @@ def create_app(settings: Settings | None = None, http: Http | None = None) -> Fa
     app.include_router(xds_router(repository, registry))
     app.include_router(mhd_router(registry, repository, settings, svc.on_demand_summary))
     app.include_router(demo_router(svc))
+    # v0.2 cross-border simulation: A's responding gateway, B's orchestration (talks to A over HTTP only)
+    app.include_router(gateway_router(settings, registry, repository))
+    jb = JurisdictionB(settings, svc.http, svc.base, audit)
+    app.state.jurisdiction_b = jb
+    app.include_router(xb_router(jb))
 
     @app.get("/healthz", include_in_schema=False)
     def health():
@@ -64,7 +72,11 @@ def create_app(settings: Settings | None = None, http: Http | None = None) -> Fa
                            "verapdf": bool(settings.verapdf_cli or settings.verapdf_url),
                            "requireHl7Validator": settings.require_hl7_validator,
                            "requireVeraPdf": settings.require_verapdf},
+            "crossBorder": {"home": settings.communities["home"]["name"],
+                            "consumer": settings.communities["consumer"]["name"],
+                            "consumerLanguage": settings.communities["consumer"]["language"]},
             "endpoints": {"xdsRepository": "/xds/repository", "xdsRegistry": "/xds/registry", "mhd": "/fhir",
+                          "xcpd": "/gateway/xcpd", "xca": "/gateway/xca",
                           "openapi": "/docs"},
         })
 
