@@ -1,0 +1,23 @@
+{
+  "key": "lukas-brenner",
+  "synthetic": true,
+  "scenario": "Young adult with asthma; no known allergies (explicitly recorded); no immunisations or results on record.",
+  "patient": {
+    "identifier": "SYN-000102",
+    "family": "Brenner",
+    "given": ["Lukas"],
+    "gender": "male",
+    "birthDate": "1994-09-02",
+    "country": "AT"
+  },
+  "problems": [
+    { "snomed": "195967001", "display": "Asthma", "onset": "2004-05-11", "clinicalStatus": "active" }
+  ],
+  "allergies_none_known": true,
+  "medications": [
+    { "atc": "R03AC02", "display": "salbutamol", "dosage": "100 micrograms inhaled as required, up to 4 times daily", "start": "2004-05-11", "status": "active" },
+    { "atc": "R03BA02", "display": "budesonide", "dosage": "200 micrograms inhaled twice daily", "start": "2018-02-03", "status": "active" }
+  ],
+  "immunizations": [],
+  "results": []
+}

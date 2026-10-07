@@ -1,0 +1,225 @@
+{
+  "source": {
+    "package": "hl7.fhir.uv.ips",
+    "version": "2.0.0",
+    "license": "CC0-1.0",
+    "tarball_sha256": "4a5cff17580f869140614ac51097d81540c63644d550ced8d4cd9b9bce7345c4"
+  },
+  "profiles": {
+    "Bundle": {
+      "url": "http://hl7.org/fhir/uv/ips/StructureDefinition/Bundle-uv-ips",
+      "required": [
+        {
+          "path": "identifier",
+          "min": 1,
+          "max": "1"
+        },
+        {
+          "path": "type",
+          "min": 1,
+          "max": "1"
+        },
+        {
+          "path": "timestamp",
+          "min": 1,
+          "max": "1"
+        },
+        {
+          "path": "entry",
+          "min": 2,
+          "max": "*"
+        }
+      ]
+    },
+    "Composition": {
+      "url": "http://hl7.org/fhir/uv/ips/StructureDefinition/Composition-uv-ips",
+      "required": [
+        {
+          "path": "status",
+          "min": 1,
+          "max": "1"
+        },
+        {
+          "path": "type",
+          "min": 1,
+          "max": "1"
+        },
+        {
+          "path": "subject",
+          "min": 1,
+          "max": "1"
+        },
+        {
+          "path": "date",
+          "min": 1,
+          "max": "1"
+        },
+        {
+          "path": "author",
+          "min": 1,
+          "max": "*"
+        },
+        {
+          "path": "title",
+          "min": 1,
+          "max": "1"
+        },
+        {
+          "path": "section",
+          "min": 3,
+          "max": "*"
+        }
+      ]
+    },
+    "Patient": {
+      "url": "http://hl7.org/fhir/uv/ips/StructureDefinition/Patient-uv-ips",
+      "required": [
+        {
+          "path": "name",
+          "min": 1,
+          "max": "*"
+        },
+        {
+          "path": "birthDate",
+          "min": 1,
+          "max": "1"
+        }
+      ]
+    },
+    "Condition": {
+      "url": "http://hl7.org/fhir/uv/ips/StructureDefinition/Condition-uv-ips",
+      "required": [
+        {
+          "path": "code",
+          "min": 1,
+          "max": "1"
+        },
+        {
+          "path": "subject",
+          "min": 1,
+          "max": "1"
+        }
+      ]
+    },
+    "AllergyIntolerance": {
+      "url": "http://hl7.org/fhir/uv/ips/StructureDefinition/AllergyIntolerance-uv-ips",
+      "required": [
+        {
+          "path": "code",
+          "min": 1,
+          "max": "1"
+        },
+        {
+          "path": "patient",
+          "min": 1,
+          "max": "1"
+        }
+      ]
+    },
+    "MedicationStatement": {
+      "url": "http://hl7.org/fhir/uv/ips/StructureDefinition/MedicationStatement-uv-ips",
+      "required": [
+        {
+          "path": "status",
+          "min": 1,
+          "max": "1"
+        },
+        {
+          "path": "medication[x]",
+          "min": 1,
+          "max": "1"
+        },
+        {
+          "path": "subject",
+          "min": 1,
+          "max": "1"
+        },
+        {
+          "path": "effective[x]",
+          "min": 1,
+          "max": "1"
+        }
+      ]
+    },
+    "Medication": {
+      "url": "http://hl7.org/fhir/uv/ips/StructureDefinition/Medication-uv-ips",
+      "required": [
+        {
+          "path": "code",
+          "min": 1,
+          "max": "1"
+        }
+      ]
+    },
+    "Immunization": {
+      "url": "http://hl7.org/fhir/uv/ips/StructureDefinition/Immunization-uv-ips",
+      "required": [
+        {
+          "path": "status",
+          "min": 1,
+          "max": "1"
+        },
+        {
+          "path": "vaccineCode",
+          "min": 1,
+          "max": "1"
+        },
+        {
+          "path": "patient",
+          "min": 1,
+          "max": "1"
+        },
+        {
+          "path": "occurrence[x]",
+          "min": 1,
+          "max": "1"
+        }
+      ]
+    },
+    "Organization": {
+      "url": "http://hl7.org/fhir/uv/ips/StructureDefinition/Organization-uv-ips",
+      "required": [
+        {
+          "path": "name",
+          "min": 1,
+          "max": "1"
+        }
+      ]
+    },
+    "Observation-lab": {
+      "url": "http://hl7.org/fhir/uv/ips/StructureDefinition/Observation-results-laboratory-pathology-uv-ips",
+      "required": [
+        {
+          "path": "status",
+          "min": 1,
+          "max": "1"
+        },
+        {
+          "path": "category",
+          "min": 1,
+          "max": "*"
+        },
+        {
+          "path": "code",
+          "min": 1,
+          "max": "1"
+        },
+        {
+          "path": "subject",
+          "min": 1,
+          "max": "1"
+        },
+        {
+          "path": "effective[x]",
+          "min": 1,
+          "max": "1"
+        },
+        {
+          "path": "performer",
+          "min": 1,
+          "max": "*"
+        }
+      ]
+    }
+  }
+}

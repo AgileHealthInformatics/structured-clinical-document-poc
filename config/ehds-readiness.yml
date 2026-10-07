@@ -1,0 +1,117 @@
+# EHDS export preview - readiness register (NON-NORMATIVE).
+#
+# This file drives the "EHDS preview" report. Nothing in the code hard-codes
+# an EHDS conformance claim: every statement shown to the user comes from here,
+# and every item that depends on implementing acts, national rules or
+# MyHealth@EU onboarding is declared as unresolved or out of scope.
+#
+# Status outcomes produced by the preview adapter:
+#   demonstrated    - automated check passed against the issued IPS
+#   gap             - automated check failed for this document
+#   optional-absent - optional content not present in this document
+#   unresolved      - depends on requirements not yet settled or not modelled here
+#   out-of-scope    - deliberately excluded from the demonstrator
+#
+# Review this register whenever EHDS implementing acts, the eHealth Network
+# Patient Summary guideline, or the pinned IPS version change.
+
+meta:
+  register_version: "0.1.0"
+  reviewed: "2026-10-07"
+  disclaimer: >-
+    Non-normative demonstrator output. This is not an EHDS, EEHRxF, MyHealth@EU
+    or NCPeH conformance statement. Detailed technical requirements are set by
+    implementing acts and national implementation, which this PoC does not claim to meet.
+
+items:
+  - id: PS-01
+    area: Dataset
+    requirement: Patient identification and demographics present
+    check: { type: elements_present, resource: Patient, paths: [identifier, name, birthDate] }
+  - id: PS-02
+    area: Dataset
+    requirement: Allergies and intolerances section present (entries or explicit empty reason)
+    check: { type: section_present, loinc: "48765-2" }
+  - id: PS-03
+    area: Dataset
+    requirement: Problem list section present
+    check: { type: section_present, loinc: "11450-4" }
+  - id: PS-04
+    area: Dataset
+    requirement: Medication summary section present
+    check: { type: section_present, loinc: "10160-0" }
+  - id: PS-05
+    area: Dataset
+    requirement: Immunisations section
+    optional: true
+    check: { type: section_present, loinc: "11369-6" }
+  - id: PS-06
+    area: Dataset
+    requirement: Results section
+    optional: true
+    check: { type: section_present, loinc: "30954-2" }
+  - id: PS-07
+    area: Provenance
+    requirement: Document author, custodian and date recorded
+    check: { type: elements_present, resource: Composition, paths: [author, custodian, date] }
+  - id: LANG-01
+    area: Rendition
+    requirement: Language of the human-readable rendition declared
+    check: { type: elements_present, resource: Composition, paths: [language] }
+  - id: TERM-01
+    area: Terminology
+    requirement: Problems coded with SNOMED CT
+    check: { type: coding_system, resource: Condition, element: code, system: "http://snomed.info/sct" }
+  - id: TERM-02
+    area: Terminology
+    requirement: Medications coded with WHO ATC
+    check: { type: coding_system, resource: MedicationStatement, element: medicationCodeableConcept, system: "http://www.whocc.no/atc" }
+  - id: TERM-03
+    area: Terminology
+    requirement: Results coded with LOINC
+    optional: true
+    check: { type: coding_system, resource: Observation, element: code, system: "http://loinc.org" }
+  - id: TERM-04
+    area: Terminology
+    requirement: Value sets, translations and designations required for cross-border display
+    status: unresolved
+    note: >-
+      Depends on the terminology content and catalogues mandated for cross-border
+      Patient Summary exchange. Licensed terminology bundles are not distributed with this PoC.
+  - id: FMT-01
+    area: Format
+    requirement: EEHRxF Patient Summary technical specification
+    status: unresolved
+    note: >-
+      The detailed EEHRxF specification is set through EHDS implementing acts. This PoC
+      targets HL7 FHIR IPS as the closest published international baseline and must be
+      re-assessed against the adopted specification.
+  - id: FMT-02
+    area: Format
+    requirement: PDF/A envelope as an exchange format
+    status: out-of-scope
+    note: The PDF/A-3 envelope is a preservation container, not a claimed EHDS exchange format.
+  - id: XB-01
+    area: Cross-border
+    requirement: MyHealth@EU / NCPeH transport, trust and onboarding
+    status: out-of-scope
+    note: No connection to any real National Contact Point. The adapter boundary (ehds/adapter.py) is where this would be implemented.
+  - id: ID-01
+    area: Identity
+    requirement: Cross-border patient identification and matching
+    status: unresolved
+    note: National identity schemes and matching rules are not modelled. Synthetic identifiers only.
+  - id: AUTH-01
+    area: Access
+    requirement: Health professional identification, authorisation and purpose of use
+    status: out-of-scope
+  - id: RIGHTS-01
+    area: Access
+    requirement: Natural-person access restrictions and opt-out handling
+    status: unresolved
+    note: Depends on national implementation choices under EHDS.
+  - id: SIG-01
+    area: Integrity
+    requirement: Electronic signature or seal on issued documents
+    status: out-of-scope
+    note: Integrity is demonstrated with SHA-256 digests only; no legal attestation is claimed.

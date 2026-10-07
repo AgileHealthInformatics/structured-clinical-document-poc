@@ -1,0 +1,41 @@
+{
+  "key": "amara-okafor",
+  "synthetic": true,
+  "scenario": "Hypertension and type 2 diabetes; penicillin allergy. Has a revision for the replacement demonstration.",
+  "patient": {
+    "identifier": "SYN-000101",
+    "family": "Okafor",
+    "given": ["Amara"],
+    "gender": "female",
+    "birthDate": "1971-03-14",
+    "country": "IE"
+  },
+  "problems": [
+    { "snomed": "38341003", "display": "Hypertensive disorder, systemic arterial", "onset": "2015-06-02", "clinicalStatus": "active" },
+    { "snomed": "44054006", "display": "Diabetes mellitus type 2", "onset": "2019-11-20", "clinicalStatus": "active" }
+  ],
+  "allergies": [
+    { "snomed": "764146007", "display": "Penicillin", "criticality": "high", "clinicalStatus": "active",
+      "reaction": { "snomed": "271807003", "display": "Eruption of skin" } }
+  ],
+  "medications": [
+    { "atc": "C09AA05", "display": "ramipril", "dosage": "5 mg orally once daily", "start": "2015-06-10", "status": "active" },
+    { "atc": "A10BA02", "display": "metformin", "dosage": "500 mg orally twice daily with meals", "start": "2019-12-01", "status": "active" }
+  ],
+  "immunizations": [
+    { "atc": "J07BB", "display": "influenza vaccines", "date": "2025-10-14" }
+  ],
+  "results": [
+    { "loinc": "4548-4", "display": "Hemoglobin A1c/Hemoglobin.total in Blood", "value": 7.1, "unit": "%", "ucum": "%", "date": "2026-08-18" },
+    { "loinc": "14682-9", "display": "Creatinine [Moles/volume] in Serum or Plasma", "value": 78, "unit": "umol/L", "ucum": "umol/L", "date": "2026-08-18" }
+  ],
+  "revision": {
+    "note": "Statin started after cardiovascular risk review; repeat HbA1c.",
+    "add_medications": [
+      { "atc": "C10AA05", "display": "atorvastatin", "dosage": "20 mg orally at night", "start": "2026-09-22", "status": "active" }
+    ],
+    "add_results": [
+      { "loinc": "4548-4", "display": "Hemoglobin A1c/Hemoglobin.total in Blood", "value": 6.8, "unit": "%", "ucum": "%", "date": "2026-09-29" }
+    ]
+  }
+}

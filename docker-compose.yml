@@ -1,0 +1,30 @@
+# docker compose up                      -> demonstrator on http://localhost:8080
+# docker compose --profile validation up -> also starts a veraPDF REST service
+#
+# No secrets, no external services required for the default profile.
+services:
+  scdpoc:
+    build: .
+    image: scdpoc:local
+    ports:
+      - "8080:8080"
+    environment:
+      SCDPOC_DATA_DIR: /data
+      SCDPOC_BASE_URL: http://127.0.0.1:8080
+      # Uncomment with the 'validation' profile to validate every envelope with veraPDF:
+      # SCDPOC_VERAPDF_URL: http://verapdf:8080
+    volumes:
+      - scdpoc-data:/data
+    restart: unless-stopped
+
+  verapdf:
+    # Optional independent PDF/A validator. Confirm the image name/tag and the
+    # REST path (/api/validate/{profile}) against current veraPDF documentation
+    # before relying on it; CI uses the veraPDF CLI instead.
+    image: verapdf/rest:latest
+    profiles: ["validation"]
+    expose:
+      - "8080"
+
+volumes:
+  scdpoc-data:

@@ -1,0 +1,11 @@
+.git
+.github
+.venv
+var
+build
+.cache
+tests
+docs
+adr
+**/__pycache__
+*.sqlite3

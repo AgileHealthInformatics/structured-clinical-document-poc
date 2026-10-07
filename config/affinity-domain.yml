@@ -1,0 +1,44 @@
+# Synthetic XDS Affinity Domain metadata policy for the demonstrator.
+#
+# This is a DEMONSTRATOR policy held in source control so that every metadata
+# decision is reviewable. It is NOT a national or regional recommendation.
+# All OIDs below the 2.999 arc are documentation/example identifiers
+# (ITU-T X.660 "example" arc) and must never appear in production.
+
+affinity_domain:
+  name: "SCD-PoC Synthetic Affinity Domain"
+  patient_assigning_authority:
+    oid: "2.999.1.1"
+    fhir_system: "urn:oid:2.999.1.1"
+    value_prefix: "SYN-"            # every synthetic patient id must start with this
+  repository_unique_id: "2.999.1.3"
+  source_id: "2.999.1.4"            # SubmissionSet.sourceId
+  home_community_id: "urn:oid:2.999.1.9"
+
+# Codes applied to every DocumentEntry in this domain.
+document_entry:
+  classCode:     { code: "60591-5", scheme: "2.16.840.1.113883.6.1", display: "Patient summary Document" }
+  typeCode:      { code: "60591-5", scheme: "2.16.840.1.113883.6.1", display: "Patient summary Document" }
+  confidentialityCode: { code: "N", scheme: "2.16.840.1.113883.5.25", display: "normal" }
+  healthcareFacilityTypeCode: { code: "SYN-FAC-GP", scheme: "2.999.1.6", display: "Synthetic general practice" }
+  practiceSettingCode:        { code: "SYN-PS-GEN", scheme: "2.999.1.6", display: "Synthetic general medicine" }
+  languageCode: "en-GB"
+
+# Two distinct representations, two distinct format codes (finding F-006).
+representations:
+  envelope:
+    mimeType: "application/pdf"
+    formatCode: { code: "urn:scdpoc:format:pdfa3b-ips-envelope:v1", scheme: "2.999.1.5",
+                  display: "PDF/A-3b envelope with embedded FHIR IPS (demonstrator-local)" }
+  ips:
+    mimeType: "application/fhir+json"
+    formatCode: { code: "urn:ihe:pcc:ips:2020", scheme: "1.3.6.1.4.1.19376.1.2.3",
+                  display: "International Patient Summary" }
+
+submission_set:
+  contentTypeCode: { code: "60591-5", scheme: "2.16.840.1.113883.6.1", display: "Patient summary Document" }
+
+author:
+  institution: "Synthetic Health Organisation^^^^^^^^^2.999.1.8"
+  person: "^Synthetic^Author^^^Dr"
+  role: "Synthetic clinician"

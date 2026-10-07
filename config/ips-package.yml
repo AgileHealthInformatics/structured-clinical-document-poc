@@ -1,0 +1,24 @@
+# Pinned standards baseline for this release. Recorded in every validation
+# report and in the CI evidence report so that an old release can be
+# reproduced after upstream guides change.
+
+fhir:
+  version: "4.0.1"
+ips:
+  package: "hl7.fhir.uv.ips"
+  version: "2.0.1"            # target for the HL7 FHIR validator (CI / full-validation profile)
+  canonical: "http://hl7.org/fhir/uv/ips"
+  bundle_profile: "http://hl7.org/fhir/uv/ips/StructureDefinition/Bundle-uv-ips"
+  # The offline pre-flight digest (config/ips-profile-digest.json) records the
+  # exact package version it was generated from. Regenerate it with
+  # scripts/build_profile_digest.py when the pinned version changes.
+ihe:
+  xds: "ITI TF Rev 20.2 (XDS.b: ITI-41, ITI-18, ITI-43)"
+  mhd: "4.2.4 (ITI-67, ITI-68) - Trial Implementation"
+  sips: "1.0.0 - Trial Implementation"
+pdfa:
+  part: 3
+  conformance: "B"
+validators:
+  hl7_fhir_validator: "validator_cli.jar (hapifhir/org.hl7.fhir.core) - version recorded at run time"
+  verapdf: "veraPDF CLI or REST - version recorded at run time"

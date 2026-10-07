@@ -1,0 +1,21 @@
+{
+  "note": "Deterministic outputs of `scdpoc build-fixtures` (issued 2026-10-07T12:00:00Z, uuid5 document ids). IPS digests are normative regression values; PDF digests depend on ReportLab/pikepdf/qpdf versions and are informative.",
+  "libraries": {
+    "reportlab": "5.0.1",
+    "pikepdf": "10.16.0"
+  },
+  "fixtures": {
+    "amara-okafor": {
+      "ips_sha256": "aaad177bb42d937061db78af6751e1b914a62cfd65caaccdec9e8a0cf80f970f",
+      "pdf_sha256_informative": "21ea09af54f559ed9f05aa3b7af547873b8d9bebf1e918d9b099665ab3ab7b17"
+    },
+    "ines-duarte": {
+      "ips_sha256": "446388baa59cbcd1709fce5a8380754985e397345601dc3d1b5bc3608c30e767",
+      "pdf_sha256_informative": "0e7069af0b80e16cda22f1bc931fdeec2b1a1a096ea9844ee0c72c1155782822"
+    },
+    "lukas-brenner": {
+      "ips_sha256": "b9b6d8d367bc757fb00e09956411c8f6e0489502b67f10ce1d29f2650152cf79",
+      "pdf_sha256_informative": "471cefe233bff78456ac8828fd46af422d1820bebc62b28fb0ce79981cd95c37"
+    }
+  }
+}

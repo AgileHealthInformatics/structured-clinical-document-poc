@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Structured Clinical Document PoC</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="demo-banner" role="note">Synthetic data only · demonstrator · not for clinical use · not a certified EHDS, MyHealth@EU, XDS, MHD or IPS implementation</div>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <p class="eyebrow">EHDS Structured Clinical Document PoC <span id="version"></span></p>
+    <h1>Preserve the clinical document.<br><em>Exchange the computable summary.</em></h1>
+    <p class="lede">Follow one synthetic patient summary from source data, through an HL7 FHIR International Patient Summary, into a PDF/A-3b preservation envelope, through IHE XDS.b and MHD sharing, and into an EHDS-oriented export preview. Every step shows the artefact and its evidence.</p>
+    <div class="masthead-actions">
+      <button class="btn primary" id="run-all" disabled>Run the whole journey</button>
+      <a class="btn ghost" href="/docs" target="_blank" rel="noopener">OpenAPI</a>
+      <a class="btn ghost" href="/fhir/metadata" target="_blank" rel="noopener">FHIR CapabilityStatement</a>
+    </div>
+    <dl class="validators" id="validators"></dl>
+  </div>
+</header>
+
+<main class="layout">
+  <nav class="rail" aria-label="Journey steps">
+    <ol id="rail"></ol>
+  </nav>
+
+  <div class="journey">
+    <section class="step" id="s1" data-step="1">
+      <header><span class="num">1</span><div><h2>Choose a synthetic patient</h2><p>Source facts from a fixed fixture path. Identifiers are in the 2.999 example OID arc and must start with <code>SYN-</code>.</p></div></header>
+      <div class="patients" id="patients"></div>
+      <div class="out" id="o1"></div>
+    </section>
+
+    <section class="step" id="s2" data-step="2">
+      <header><span class="num">2</span><div><h2>Compose the IPS</h2><p>Map source data to an HL7 FHIR IPS document Bundle: Composition first, sections, profiles and terminology.</p></div></header>
+      <div class="actions"><button class="btn" data-act="compose" disabled>Compose IPS</button></div>
+      <div class="out" id="o2"></div>
+    </section>
+
+    <section class="step" id="s3" data-step="3">
+      <header><span class="num">3</span><div><h2>Validate</h2><p>Offline pre-flight plus the HL7 FHIR validator against the pinned IPS package (when configured). Errors block publication.</p></div></header>
+      <div class="out" id="o3"></div>
+    </section>
+
+    <section class="step" id="s4" data-step="4">
+      <header><span class="num">4</span><div><h2>Render</h2><p>The human-readable summary is generated from the same IPS instance - never the other way round.</p></div></header>
+      <div class="out" id="o4"></div>
+    </section>
+
+    <section class="step" id="s5" data-step="5">
+      <header><span class="num">5</span><div><h2>Package the preservation envelope</h2><p>PDF/A-3b with the exact validated IPS bytes embedded as an Associated File (<code>AFRelationship=Source</code>).</p></div></header>
+      <div class="actions"><button class="btn" data-act="package" disabled>Create PDF/A-3b envelope</button></div>
+      <div class="out" id="o5"></div>
+    </section>
+
+    <section class="step" id="s6" data-step="6">
+      <header><span class="num">6</span><div><h2>Validate the preservation format</h2><p>Generation is not conformance. veraPDF is the independent validator; the built-in pre-flight is a subset check only.</p></div></header>
+      <div class="out" id="o6"></div>
+    </section>
+
+    <section class="step" id="s7" data-step="7">
+      <header><span class="num">7</span><div><h2>Publish through XDS.b</h2><p>Two ITI-41 submissions: the envelope (preserved package), then the IPS projection linked to it by an XFRM association.</p></div></header>
+      <div class="actions"><button class="btn" data-act="publish" disabled>Publish (ITI-41)</button></div>
+      <div class="out" id="o7"></div>
+    </section>
+
+    <section class="step" id="s8" data-step="8">
+      <header><span class="num">8</span><div><h2>Discover and retrieve</h2><p>The same registry content seen through SOAP (ITI-18 / ITI-43) and FHIR (ITI-67 / ITI-68), then checked for integrity.</p></div></header>
+      <div class="actions"><button class="btn" data-act="discover" disabled>Discover and retrieve</button></div>
+      <div class="out" id="o8"></div>
+    </section>
+
+    <section class="step" id="s9" data-step="9">
+      <header><span class="num">9</span><div><h2>Exchange projection</h2><p>A consumer obtains <code>application/fhir+json</code> directly - no PDF unpacking.</p></div></header>
+      <div class="out" id="o9"></div>
+    </section>
+
+    <section class="step" id="s10" data-step="10">
+      <header><span class="num">10</span><div><h2>EHDS export preview</h2><p>What can be shown now, and what remains controlled by implementing acts, national rules or MyHealth@EU onboarding. Non-normative.</p></div></header>
+      <div class="actions"><button class="btn" data-act="ehds" disabled>Run EHDS preview</button></div>
+      <div class="out" id="o10"></div>
+    </section>
+
+    <section class="step extra" id="s11">
+      <header><span class="num">+</span><div><h2>Replace, audit and attempt to tamper</h2><p>Issued documents are immutable. A new version replaces the current one through an RPLC association; the old snapshot stays retrievable.</p></div></header>
+      <div class="actions">
+        <button class="btn" data-act="replace" disabled>Issue replacement version</button>
+        <button class="btn warn" data-act="tamper-embedded" disabled>Tamper: alter embedded IPS</button>
+        <button class="btn warn" data-act="tamper-outer" disabled>Tamper: append bytes</button>
+        <button class="btn ghost" data-act="ondemand" disabled>On-demand current summary</button>
+      </div>
+      <div class="out" id="o11"></div>
+    </section>
+  </div>
+</main>
+
+<footer class="foot">
+  <p>Apache-2.0. Synthetic data only. Standards baseline: HL7 FHIR IPS 2.0.1 (FHIR R4), IHE XDS.b, MHD 4.2.4, sIPS 1.0.0, ISO 19005-3 (PDF/A-3). ISO 27269 is referenced, not reproduced.</p>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

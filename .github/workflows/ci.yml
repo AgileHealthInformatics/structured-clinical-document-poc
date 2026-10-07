@@ -1,0 +1,91 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Lint and tests (AT-01..AT-12 without external validators)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.lock -e ".[dev]"
+      - run: ruff check src tests
+      - run: pytest -ra
+
+  validators:
+    name: External validators (HL7 FHIR validator + veraPDF)
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - run: pip install -r requirements.lock -e ".[dev]"
+      - name: Install HL7 FHIR validator
+        run: |
+          mkdir -p .cache
+          curl -fsSL -o .cache/validator_cli.jar \
+            https://github.com/hapifhir/org.hl7.fhir.core/releases/latest/download/validator_cli.jar
+          java -jar .cache/validator_cli.jar -help | head -3 || true
+      - name: Install veraPDF CLI
+        run: scripts/ci/install-verapdf.sh "$HOME/verapdf"
+      - name: Build deterministic fixture artefacts
+        run: scdpoc build-fixtures --out build/fixtures
+      - name: AT-01 - HL7 FHIR validator against pinned IPS package
+        env:
+          SCDPOC_HL7_VALIDATOR_JAR: .cache/validator_cli.jar
+        run: scripts/validate-ips.sh build/fixtures/*.ips.json
+      - name: AT-05 - veraPDF PDF/A-3b validation
+        run: SCDPOC_VERAPDF_CLI="$HOME/verapdf/verapdf" scripts/validate-pdfa.sh build/fixtures/*.pdf
+      - name: Validator-dependent acceptance tests
+        run: |
+          SCDPOC_HL7_VALIDATOR_JAR=.cache/validator_cli.jar \
+          SCDPOC_VERAPDF_CLI="$HOME/verapdf/verapdf" \
+          pytest -m "verapdf or hl7validator" -ra
+      - name: Software bill of materials and dependency audit
+        run: |
+          pip install cyclonedx-bom pip-audit
+          cyclonedx-py environment -o build/evidence/sbom.cdx.json
+          pip-audit -r requirements.lock || true
+      - name: Evidence report
+        if: always()
+        run: python scripts/ci/evidence_report.py build > build/evidence/README.md || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evidence-${{ github.sha }}
+          path: |
+            build/fixtures
+            build/evidence
+
+  docker:
+    name: AT-12 - clean clone starts with docker compose
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose up -d --build
+      - name: Wait for health
+        run: |
+          for i in $(seq 1 30); do curl -fsS http://localhost:8080/healthz && exit 0; sleep 2; done
+          docker compose logs; exit 1
+      - run: scripts/demo.sh http://localhost:8080
+      - if: always()
+        run: docker compose down -v
