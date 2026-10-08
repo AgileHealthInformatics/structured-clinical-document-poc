@@ -3,10 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Structured Clinical Document PoC</title>
+<title>Structured Clinical Document Demonstrator | Agile Health Informatics Ltd</title>
+<meta name="description" content="Explore a synthetic patient summary through FHIR IPS, PDF/A-3 preservation, XDS and MHD sharing, and simulated cross-border exchange.">
+<script>try{const t=localStorage.getItem("ahi-theme");document.documentElement.dataset.theme=t==="dark"||t==="light"?t:(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");}catch(e){}</script>
 <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to demonstrator</a>
+<header class="site-header"><div class="nav-wrap"><a aria-label="Agile Health Informatics Ltd home" class="brand-link" href="https://agilehealthinformatics.com/"><img alt="Agile Health Informatics Ltd logo" src="data:image/webp;base64,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"/><span class="brand-name"><strong>Agile Health Informatics Ltd</strong><span>creative ideas &amp; solutions</span></span></a><nav aria-label="Main navigation" class="site-nav" id="siteNav"><a class="active" href="https://agilehealthinformatics.com/">Home</a><a href="https://agilehealthinformatics.com/services.html">Services</a><a href="https://agilehealthinformatics.com/resources.html">Resources</a><a href="https://agilehealthinformatics.com/about.html">About</a><a href="https://agilehealthinformatics.com/#contact">Connect</a></nav><div class="nav-actions"><button aria-label="Switch colour theme" aria-pressed="false" class="icon-btn" id="themeToggle" type="button">◐</button><button aria-controls="siteNav" aria-expanded="false" aria-label="Open navigation" class="menu-btn" id="menuToggle" type="button">☰</button></div></div></header>
 <div class="demo-banner" role="note">Synthetic data only · demonstrator · not for clinical use · not a certified EHDS, MyHealth@EU, XDS, MHD or IPS implementation</div>
 
 <header class="masthead">
@@ -23,7 +27,7 @@
   </div>
 </header>
 
-<main class="layout">
+<main class="layout" id="main-content" tabindex="-1">
   <nav class="rail" aria-label="Journey steps">
     <ol id="rail"></ol>
   </nav>
@@ -111,10 +115,21 @@
   </div>
 </main>
 
-<footer class="foot">
+<footer class="foot"><p><strong>Agile Health Informatics Ltd</strong> · creative ideas &amp; solutions</p><p><a href="https://agilehealthinformatics.com/">Home</a> · <a href="https://agilehealthinformatics.com/resources.html">Resource library</a></p>
   <p>Apache-2.0. Synthetic data only. Standards baseline: HL7 FHIR IPS 2.0.1 (FHIR R4), IHE XDS.b, XCPD, XCA, MHD 4.2.4, sIPS 1.0.0, ISO 19005-3 (PDF/A-3). ISO 27269 is referenced, not reproduced.</p>
 </footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+(function(){
+const root=document.documentElement,theme=document.getElementById('themeToggle'),menu=document.getElementById('menuToggle'),nav=document.getElementById('siteNav');
+function sync(){theme.setAttribute('aria-pressed',String(root.dataset.theme==='dark'));theme.setAttribute('aria-label',root.dataset.theme==='dark'?'Switch to light theme':'Switch to dark theme');}sync();
+theme.addEventListener('click',()=>{root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';try{localStorage.setItem('ahi-theme',root.dataset.theme);}catch(e){}sync();});
+menu.addEventListener('click',()=>{const open=nav.classList.toggle('open');menu.setAttribute('aria-expanded',String(open));});
+nav.addEventListener('keydown',e=>{if(e.key==='Escape'){nav.classList.remove('open');menu.setAttribute('aria-expanded','false');menu.focus();}});
+const rail=document.getElementById('rail');new MutationObserver(()=>{rail.querySelectorAll('li').forEach(li=>{li.tabIndex=0;li.setAttribute('role','button');});}).observe(rail,{childList:true});
+rail.addEventListener('keydown',e=>{if(e.target.matches('li')&&(e.key==='Enter'||e.key===' ')){e.preventDefault();e.target.click();}});
+})();
+</script>
 <script src="/static/app.js"></script>
 </body>
 </html>
