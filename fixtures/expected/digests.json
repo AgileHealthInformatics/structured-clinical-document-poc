@@ -1,22 +1,22 @@
 {
-  "note": "Deterministic outputs of `scdpoc build-fixtures` (issued 2026-10-07T12:00:00Z, uuid5 document ids). IPS digests are normative regression values; PDF digests depend on ReportLab/pikepdf/qpdf/LittleCMS versions and are informative. Regenerated for 0.5.0 (profile 0.4.0): the fixtures gained structured dosage instructions, maximum doses, notes, body sites, allergy categories, dose numbers and reference ranges so that the coverage matrix (review 3, IMP-03) is exercised; the rendition shows the clinical content time separately from the issuance time (IMP-05).",
-  "libraries": {
-    "reportlab": "5.0.1",
-    "pikepdf": "10.16.0",
-    "pillow": "12.3.0"
-  },
-  "fixtures": {
-    "amara-okafor": {
-      "ips_sha256": "0e045efa05d30ca0d9e99a8fbf5bd6d0097f7b70102c08615cc9e6818c955878",
-      "pdf_sha256_informative": "b9dfa4402bab4cb509fbeddac46c0439799759bf511eaf49e3247b4ae2b0724f"
-    },
-    "ines-duarte": {
-      "ips_sha256": "74b8ea33c02fc769d5297cfca1951b4e1200e206fca83ac2465b91341393224d",
-      "pdf_sha256_informative": "9bd3c8455fa2cd3f700d424a09c3958a239c331fbe4ae9851954c71128f6d253"
-    },
-    "lukas-brenner": {
-      "ips_sha256": "2f24ead6691bbe905b0876cc6f4c76e6cf75f0203fdbdc1e4f73fbf505f85eaf",
-      "pdf_sha256_informative": "3701412d19352b3660538a2bba14a2ae330d185c223f7ab79b3d81d3599b3ef4"
-    }
-  }
+    "note":  "Deterministic outputs of `scdpoc build-fixtures` (issued 2026-10-07T12:00:00Z, uuid5 document ids). IPS digests are normative regression values; PDF digests depend on ReportLab/pikepdf/qpdf/LittleCMS versions and are informative. Regenerated for 0.5.0 (profile 0.4.0): the fixtures gained structured dosage instructions, maximum doses, notes, body sites, allergy categories, dose numbers and reference ranges so that the coverage matrix (review 3, IMP-03) is exercised; the rendition shows the clinical content time separately from the issuance time (IMP-05). Checksums regenerated following reviewed LOINC display, severity display and inhalation method corrections.",
+    "libraries":  {
+                      "reportlab":  "5.0.1",
+                      "pikepdf":  "10.16.0",
+                      "pillow":  "12.3.0"
+                  },
+    "fixtures":  {
+                     "amara-okafor":  {
+                                          "ips_sha256":  "e635aadb4a2124e704995ceda147c3bf5e8871fb42fe37631cdbe3c188b650d3",
+                                          "pdf_sha256_informative":  "47f386167fdd7aa76627556a3ed6afac352bae7bb84539aef815a116e93ec4d5"
+                                      },
+                     "ines-duarte":  {
+                                         "ips_sha256":  "372ab99849bfbcd2380d6ef7150c1fc953364162146619bfdd1511cc4f9e7dea",
+                                         "pdf_sha256_informative":  "8eeefbeb7c0b699570fac29bf65d2a0276e9efe932c85e8f83e0e53b660a924a"
+                                     },
+                     "lukas-brenner":  {
+                                           "ips_sha256":  "b74888bb8450fc2af0da4ba17a9fac199b5f8e1fc001bc89219e742a629fb1ec",
+                                           "pdf_sha256_informative":  "35d5249bd073694ef0c06ed252ccb15ac12dfbae97b1c5e4bfbd5fee4b03b4ff"
+                                       }
+                 }
 }

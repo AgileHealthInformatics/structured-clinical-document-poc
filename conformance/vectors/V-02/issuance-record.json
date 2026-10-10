@@ -13,11 +13,11 @@
     "method": "Conformance vector: a declared synthetic attestation action, not a clinical one",
     "statement": "I have reviewed this patient summary and accept responsibility for its content.",
     "reviewedDraft": "56454c48-ef57-5719-b6f2-f175c432b75b",
-    "reviewedIpsSha256": "ae76506ead7284dbd086cd01b3a9dcfebc14031690ad7668341970400cdc25c2",
-    "attestedContentDigest": "a4103acceb3a47809ddc4b336a5c2b5b5691e31328a81634e0931ddead0ede8c"
+    "reviewedIpsSha256": "12000376ce2f3ee70be5f110015937209e96c478d2328cd4e169db4c1f0eb26b",
+    "attestedContentDigest": "937ac59839c4c8c05a8ee501b2450425268b218f87ad3a9398df8e01a23dc4b1"
   },
-  "envelopeSha256": "b42e5eb5f2b99340f145d6daf3671991f7fc292f30ed25b5ce00ce086b4ada83",
-  "ipsSha256": "8728ff5b7a81ab18666225009522329fa6aa619cc2112f8f62a97efbb1b4e9ef",
+  "envelopeSha256": "b295905ba2135e509671adc61f59725a53b321d56a15dce555fc9126e6f6a0ac",
+  "ipsSha256": "c4697218cff10397f77d7fae36c547ac3fab63a02f24f509c358a2e83a3fa1e4",
   "renderer": "scdpoc-render-4",
   "provenance": {
     "sourceOrganisation": "Synthetic Health Organisation",

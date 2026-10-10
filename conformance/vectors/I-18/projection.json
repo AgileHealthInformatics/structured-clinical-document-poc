@@ -61,7 +61,7 @@
                 {
                   "system": "http://loinc.org",
                   "code": "11450-4",
-                  "display": "Problem list"
+                  "display": "Problem list - Reported"
                 }
               ]
             },
@@ -75,7 +75,7 @@
             ],
             "text": {
               "status": "generated",
-              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table><thead><tr><th>Problem</th><th>Code</th><th>Status</th><th>Severity</th><th>Onset</th><th>Details</th></tr></thead><tbody><tr><td>Hypertensive disorder, systemic arterial</td><td>38341003</td><td>active · confirmed</td><td>Moderate</td><td>2015-06-02</td><td></td></tr><tr><td>Diabetes mellitus type 2</td><td>44054006</td><td>active · confirmed</td><td></td><td>2019-11-20</td><td>Managed with diet alone until late 2019.</td></tr></tbody></table></div>"
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table><thead><tr><th>Problem</th><th>Code</th><th>Status</th><th>Severity</th><th>Onset</th><th>Details</th></tr></thead><tbody><tr><td>Hypertensive disorder, systemic arterial</td><td>38341003</td><td>active · confirmed</td><td>Moderate severity</td><td>2015-06-02</td><td></td></tr><tr><td>Diabetes mellitus type 2</td><td>44054006</td><td>active · confirmed</td><td></td><td>2019-11-20</td><td>Managed with diet alone until late 2019.</td></tr></tbody></table></div>"
             }
           },
           {
@@ -85,7 +85,7 @@
                 {
                   "system": "http://loinc.org",
                   "code": "48765-2",
-                  "display": "Allergies and intolerances"
+                  "display": "Allergies and adverse reactions Document"
                 }
               ]
             },
@@ -106,7 +106,7 @@
                 {
                   "system": "http://loinc.org",
                   "code": "10160-0",
-                  "display": "Medication summary"
+                  "display": "History of Medication use Narrative"
                 }
               ]
             },
@@ -130,7 +130,7 @@
                 {
                   "system": "http://loinc.org",
                   "code": "11369-6",
-                  "display": "History of immunizations"
+                  "display": "History of Immunization note"
                 }
               ]
             },
@@ -151,7 +151,7 @@
                 {
                   "system": "http://loinc.org",
                   "code": "30954-2",
-                  "display": "Results"
+                  "display": "Relevant diagnostic tests/laboratory data note"
                 }
               ]
             },
@@ -318,7 +318,7 @@
             {
               "system": "http://snomed.info/sct",
               "code": "6736007",
-              "display": "Moderate"
+              "display": "Moderate severity"
             }
           ]
         },

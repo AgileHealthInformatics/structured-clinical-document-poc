@@ -17,7 +17,7 @@
       "mustFail": [],
       "why": "-",
       "expected": {},
-      "envelopeSha256": "b359c1b6acc237568efb81f1a0b071f5e8d06638e3d88988a0102b5c52181971",
+      "envelopeSha256": "c35ea0470d0143773455e3b87c1ebb5c6a3d7f4bd8d87b9c5eb26db2cac21678",
       "mustPass": [
         "ENV-11",
         "SRC-03",
@@ -72,7 +72,7 @@
       "mustFail": [],
       "why": "-",
       "expected": {},
-      "envelopeSha256": "b42e5eb5f2b99340f145d6daf3671991f7fc292f30ed25b5ce00ce086b4ada83",
+      "envelopeSha256": "b295905ba2135e509671adc61f59725a53b321d56a15dce555fc9126e6f6a0ac",
       "mustPass": [
         "ENV-11",
         "SRC-03",
@@ -133,7 +133,7 @@
       ],
       "why": "The embedded octets no longer match the recorded digest (ENV-05) or the projection (XCH-02), and the pages no longer show the value the embedded source now carries (REN-02).",
       "expected": {},
-      "envelopeSha256": "912bef1af33ae7667cdaf7fb5d6cc6fa5a0eb1db03dbf56fe7ecaea8b6a4aba1"
+      "envelopeSha256": "a6653295ea6669b54ef164acc351cb747203e37d481bdac5993b7aeda522a41c"
     },
     "I-02": {
       "description": "AFRelationship of the embedded IPS set to /Data",
@@ -149,7 +149,7 @@
       ],
       "why": "No associated file has relationship Source.",
       "expected": {},
-      "envelopeSha256": "6bc8bb746395567707e939efa449038f71d014207a4092ef56abe7ba841ed003"
+      "envelopeSha256": "9e9e5ac288c84635bc743ca80ea24f0d2585c818484159843db49639c62102db"
     },
     "I-04": {
       "description": "One medication entry omitted from the pages",
@@ -164,7 +164,7 @@
       ],
       "why": "The omitted entry's required elements are not visible.",
       "expected": {},
-      "envelopeSha256": "38b7a640ecb15e14315d3458d8d12ccd89b8d4b8f7e1b1f49ceac3e780706f4d"
+      "envelopeSha256": "efdff817954ab7e2a00565da723b54cdd147c4166bb2322623165d7051785658"
     },
     "I-05": {
       "description": "Second associated file with relationship /Source",
@@ -179,7 +179,7 @@
       ],
       "why": "Two files have relationship Source.",
       "expected": {},
-      "envelopeSha256": "157901a2a71d101b37c99cbc004df15e61f64f3aeeae268d18e77feb53d68a70"
+      "envelopeSha256": "35a39ebcc74feeca614fcd7d239d257a902a2d20e620a53e0f39ff7bc1d65fc8"
     },
     "I-06": {
       "description": "Text set in a non-embedded standard font (Helvetica)",
@@ -194,7 +194,7 @@
       ],
       "why": "PDF/A-3 requires every font used for rendering to be embedded. ENV-10 is not expected: a standard font with a standard encoding has a Unicode mapping.",
       "expected": {},
-      "envelopeSha256": "1e0d7ff56a417e0aa96ba7354b74440fbb4576aa8bab7d4cec3f4251365f3b30"
+      "envelopeSha256": "0a33ddaef541827a21a69a090d04f77f6d74a80b922fed6a5b878cc88e0db42a"
     },
     "I-07": {
       "description": "Incremental update appended after issuance",
@@ -209,7 +209,7 @@
       ],
       "why": "The file differs from the issued file.",
       "expected": {},
-      "envelopeSha256": "f0e1ae12f78846de12499c85e18973119c39e7844d0bea212c31c35e9ad88855"
+      "envelopeSha256": "b67564fb966b2808c58a388d9a6f02ffff50c4816aba6edbe59100de831357ce"
     },
     "I-08": {
       "description": "Bundle.type changed to collection (record and envelope consistent)",
@@ -224,7 +224,7 @@
       ],
       "why": "An IPS Bundle has type document; the structural pre-flight fails before any validator runs.",
       "expected": {},
-      "envelopeSha256": "56097c91772b71d82867d822b4de845da96dfaa464653bd49bf26ae93429a26b"
+      "envelopeSha256": "f95e73d183abcda8f2bfbd31369e5e3621e3a522fffe97c3716aa707222599ab"
     },
     "I-09": {
       "description": "Projection re-serialised with different white space",
@@ -241,7 +241,7 @@
       ],
       "why": "The exchanged octets differ from the embedded ones.",
       "expected": {},
-      "envelopeSha256": "b359c1b6acc237568efb81f1a0b071f5e8d06638e3d88988a0102b5c52181971"
+      "envelopeSha256": "c35ea0470d0143773455e3b87c1ebb5c6a3d7f4bd8d87b9c5eb26db2cac21678"
     },
     "I-10": {
       "description": "Narrative-only section (plan of care) omitted from the pages",
@@ -257,7 +257,7 @@
       ],
       "why": "The section title and its narrative are required and absent.",
       "expected": {},
-      "envelopeSha256": "01671afbf183aebb5854f02b7a3e3f3e51b3e138dde40515c4f6df89e5257d01"
+      "envelopeSha256": "521af5582ccde290cacd17193dc82a18dc83d82ba46e712b4967118732fcbbf5"
     },
     "I-11": {
       "description": "Dose on the pages differs from the source (dose 10 mg shown, 5 mg in the IPS)",
@@ -272,7 +272,7 @@
       ],
       "why": "The entry is shown but its dose is not the canonical form of the source value.",
       "expected": {},
-      "envelopeSha256": "661503b32dbaa1cae64c02bc3f99a5581e693443b781d9f1655af0ad0a55c306"
+      "envelopeSha256": "fd33329b28f5299d423541f4e2e079dd0bf30d5ba0ffd66b4e3fe25540d290d4"
     },
     "I-12": {
       "description": "Issuance record claims attested issuance without attestation evidence",
@@ -287,7 +287,7 @@
       ],
       "why": "Attestation is claimed and no evidence exists; with option AI the evidence obligation fails.",
       "expected": {},
-      "envelopeSha256": "b359c1b6acc237568efb81f1a0b071f5e8d06638e3d88988a0102b5c52181971",
+      "envelopeSha256": "c35ea0470d0143773455e3b87c1ebb5c6a3d7f4bd8d87b9c5eb26db2cac21678",
       "mustFailWithOptions": {
         "AI": [
           "PROV-02.a"
@@ -308,7 +308,7 @@
       ],
       "why": "The source claims attestation for a preserved snapshot.",
       "expected": {},
-      "envelopeSha256": "ed388f2f62889785abdeaa9eaabbf83e13992f05f709fa2ec33427170fc92999"
+      "envelopeSha256": "4a9b86c6041ce16cab50aa32fc910868cc56ee404e28576a57a920f26364f3f1"
     },
     "I-14": {
       "description": "A problem code shown in the medication section",
@@ -323,7 +323,7 @@
       ],
       "why": "The code is carried neither by that section's entries nor by its source narrative.",
       "expected": {},
-      "envelopeSha256": "48d938a3dce99d9f974b08db83dd3e2936e4c165dc93874baec843e97843bb94"
+      "envelopeSha256": "f1f45fbb5080d80ac3d28df9a326cc64bf33ec40276b2691118db9bf8b85cfd5"
     },
     "I-15": {
       "description": "Composition.status preliminary",
@@ -338,7 +338,7 @@
       ],
       "why": "An issuance is final, or amended for a correction.",
       "expected": {},
-      "envelopeSha256": "2ae53790ae1bb1ebb5738631dafde93718b772f0c4def988fb6c5fae46893c59"
+      "envelopeSha256": "c1d624619ace6de16936d4735938732593575ff9656a6411f4049a79027f582b"
     },
     "I-16": {
       "description": "Nested section; the nested entry's dosage timing omitted from the pages",
@@ -354,7 +354,7 @@
       ],
       "why": "A required element of an entry in a nested section is not visible.",
       "expected": {},
-      "envelopeSha256": "c353d479978e65e80ca10d0aee85ebdbe1d4e59d371d421dec46f76b4cb5b87a"
+      "envelopeSha256": "de47e677a7d1f9d6ee227399e364e41906957b688eafbc179227613e95f71427"
     },
     "I-17": {
       "description": "ToUnicode maps removed from the embedded fonts",
@@ -369,7 +369,7 @@
       ],
       "why": "The embedded subset fonts use an identity encoding, so without ToUnicode the page text has no Unicode mapping. ENV-10 is advisory: the failure is reported as a warning. REN-02 may also fail, because the Checker reads the pages through that mapping.",
       "expected": {},
-      "envelopeSha256": "5b1e54ec6385c44f07898eb12b94bc172b7830563d5f36f802575fb07b11b3d6"
+      "envelopeSha256": "2320dee34819ed7ae3f0964f8f2669932b7a193fa1a0a9ac839075203613148f"
     },
     "I-18": {
       "description": "Attested issuance whose dose was changed after attestation; evidence unchanged; pages rendered from the changed source (option AI)",
@@ -387,7 +387,7 @@
       ],
       "why": "The attested content digest of the issued source differs from the digest that was attested.",
       "expected": {},
-      "envelopeSha256": "fb40acd3c97a097bb10118ebea2eb86c5ac095a585b9715262a95eadd54eebf4"
+      "envelopeSha256": "c5ea3824ff419114f39b0a55991126929d2f223eba28200aa99eb13b41665ab2"
     },
     "I-19": {
       "description": "Boundary: a Condition stage (disposition N) populated and shown; no inspection declared",
@@ -402,7 +402,7 @@
       "expected": {
         "REN-14": "not-tested"
       },
-      "envelopeSha256": "635d500729e97abc0e79618af7c181cac89ff80512f92806f26f232a32413dea"
+      "envelopeSha256": "c9281275c07f75ea63d0bf17d41ade78f2bf0d5451e76e7383577dc379fe8819"
     }
   }
 }
