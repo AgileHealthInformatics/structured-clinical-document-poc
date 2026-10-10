@@ -282,6 +282,13 @@ def compose_ips(
                        "11369-6": immunizations, "30954-2": results}
     required = {"11450-4", "48765-2", "10160-0"}
     index = {e["fullUrl"]: e["resource"] for e in entries}
+    section_displays = {
+        "11450-4": "Problem list - Reported",
+        "48765-2": "Allergies and adverse reactions Document",
+        "10160-0": "History of Medication use Narrative",
+        "11369-6": "History of Immunization note",
+        "30954-2": "Relevant diagnostic tests/laboratory data note",
+    }
     sections = []
     for code, title in SECTION_ORDER:
         if code not in refs_by_section:
@@ -289,7 +296,10 @@ def compose_ips(
         refs = refs_by_section[code]
         if not refs and code not in required:
             continue
-        section: dict[str, Any] = {"title": title, "code": _cc(LOINC, code, title)}
+        section: dict[str, Any] = {
+            "title": title,
+            "code": _cc(LOINC, code, section_displays[code]),
+        }
         if refs:
             section["entry"] = [{"reference": r} for r in refs]
         else:
