@@ -1,6 +1,6 @@
 # ADR-003: Two DocumentEntries per issuance; XDS.b as the sharing model, MHD as a façade
 
-- Status: Accepted
+- Status: Superseded in part by [ADR-008](008-corrected-ihe-binding-and-fidelity.md) (format code, XFRM direction, single submission, replacement chain)
 - Date: 2026-10-07
 
 ## Context

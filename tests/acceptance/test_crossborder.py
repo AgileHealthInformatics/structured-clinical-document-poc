@@ -46,7 +46,7 @@ def test_xb_at03_gateway_releases_only_current_ips(client, published):
     r = client.post("/api/demo/xb/exchange/b-okafor").json()
     assert r["documents"], "IPS should be discoverable across the gateway"
     assert {d["mimeType"] for d in r["documents"]} == {"application/fhir+json"}
-    assert {d["formatCode"] for d in r["documents"]} == {"urn:ihe:pcc:ips:2020"}
+    assert {d["formatCode"] for d in r["documents"]} == {"http://hl7.org/fhir/uv/ips/StructureDefinition/Bundle-uv-ips"}
     assert {d["home"] for d in r["documents"]} == {HCID_A}
 
 

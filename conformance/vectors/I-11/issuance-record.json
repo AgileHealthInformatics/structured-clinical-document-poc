@@ -1,0 +1,93 @@
+{
+  "documentId": "urn:uuid:56454c48-ef57-5719-b6f2-f175c432b75b",
+  "seriesId": "362228b1-7872-57f7-b17b-909e18bbd382",
+  "version": 1,
+  "issued": "2026-10-08T12:00:00Z",
+  "assurance": "preserved-snapshot",
+  "attestationEvidence": null,
+  "envelopeSha256": "661503b32dbaa1cae64c02bc3f99a5581e693443b781d9f1655af0ad0a55c306",
+  "ipsSha256": "ae76506ead7284dbd086cd01b3a9dcfebc14031690ad7668341970400cdc25c2",
+  "renderer": "scdpoc-render-4",
+  "provenance": {
+    "sourceOrganisation": "Synthetic Health Organisation",
+    "custodian": "Synthetic Health Organisation",
+    "renderer": "scdpoc-render-4"
+  },
+  "validationEvidence": {
+    "ipsPackage": "hl7.fhir.uv.ips#2.0.1",
+    "preflight": {
+      "status": "passed",
+      "engine": "builtin-preflight"
+    },
+    "hl7Validator": {
+      "status": "not-run",
+      "version": null,
+      "detail": "vector generator: run the HL7 FHIR validator 7.0.1 to complete the evidence"
+    },
+    "pdfa": {
+      "validator": "veraPDF",
+      "status": "not-run",
+      "version": null,
+      "profile": "PDF/A-3B"
+    }
+  },
+  "representation": {
+    "ipsPackage": "hl7.fhir.uv.ips#2.0.1",
+    "fhirVersion": "4.0.1",
+    "pdfa": "PDF/A-3b (ISO 19005-3:2012)",
+    "renderer": "scdpoc-render-4",
+    "presentationResources": {
+      "layout": "scdpoc-render-4",
+      "labels": "en-GB",
+      "fonts": "Bitstream Vera, embedded"
+    },
+    "terminologies": [
+      {
+        "system": "http://loinc.org",
+        "version": null
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "version": null
+      },
+      {
+        "system": "http://standardterms.edqm.eu",
+        "version": null
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical",
+        "version": null
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification",
+        "version": null
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+        "version": null
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+        "version": null
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+        "version": null
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+        "version": null
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+        "version": null
+      },
+      {
+        "system": "http://www.whocc.no/atc",
+        "version": null
+      }
+    ]
+  },
+  "replaces": null,
+  "replacementReason": null
+}

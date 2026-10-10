@@ -86,5 +86,6 @@ def list_fixtures(settings: Settings) -> list[dict[str, Any]]:
             "birthDate": src["patient"]["birthDate"],
             "scenario": src.get("scenario", ""),
             "hasRevision": "revision" in src,
+            "hasCorrection": "correction" in src,
         })
     return out

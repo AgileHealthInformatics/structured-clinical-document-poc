@@ -20,8 +20,10 @@ import re
 from dataclasses import dataclass
 
 from .model import (
+    ASSOC_APND,
     ASSOC_HAS_MEMBER,
     ASSOC_RPLC,
+    ASSOC_UPDATE_AVAILABILITY,
     ASSOC_XFRM,
     STATUS_APPROVED,
     STATUS_DEPRECATED,
@@ -91,6 +93,18 @@ class Registry:
 
     def register(self, sub: Submission) -> list[str]:
         """ITI-42 semantics. Returns entry UUIDs deprecated by this submission."""
+        deprecate = self.validate(sub)
+        ss = sub.submission_set
+        for de in sub.documents:
+            de.status = STATUS_APPROVED
+        self.store.add_submission(ss, sub.documents, sub.associations, deprecate)
+        self.audit.record("registry", "ITI-42 register", submission_set=ss.unique_id,
+                          documents=[d.unique_id for d in sub.documents], deprecated=deprecate)
+        return deprecate
+
+    def validate(self, sub: Submission, *, require_repository_metadata: bool = True) -> list[str]:
+        """All registry checks, without side effects. Returns the entries the submission would deprecate.
+        Called by the repository before any bytes are stored, so a rejected submission leaves nothing behind."""
         ss = sub.submission_set
         if not ss.unique_id or not ss.submission_time or not ss.content_type.code:
             raise XdsError("XDSRegistryMetadataError", "SubmissionSet uniqueId, submissionTime and "
@@ -109,10 +123,11 @@ class Registry:
             if self.store.unique_id_exists(de.unique_id):
                 raise XdsError("XDSDuplicateUniqueIdInRegistry", f"uniqueId {de.unique_id} already registered",
                                de.entry_uuid)
-            if not de.hash or de.size is None or not de.repository_unique_id:
+            if require_repository_metadata and (not de.hash or de.size is None or not de.repository_unique_id):
                 raise XdsError("XDSRegistryMetadataError", "hash, size and repositoryUniqueId are required at "
                                                            "registration", de.entry_uuid)
-            de.status = STATUS_APPROVED
+        if len({d.unique_id for d in sub.documents}) != len(sub.documents):
+            raise XdsError("XDSDuplicateUniqueIdInRegistry", "two DocumentEntries in one submission share a uniqueId")
         members = {a.target for a in sub.associations if a.type == ASSOC_HAS_MEMBER and a.source == ss.entry_uuid}
         missing = set(in_sub) - members
         if missing:
@@ -134,16 +149,55 @@ class Registry:
                     raise XdsError("XDSRegistryDeprecatedDocumentError",
                                    f"RPLC target {a.target} is not an Approved registry entry")
                 deprecate.append(a.target)
-                # Transformations of the replaced document are deprecated with it.
+                # ITI TF-3: transformations (XFRM) and addenda (APND) of the replaced document are deprecated too.
                 for rel in self.store.associations_for(a.target):
-                    if rel.type == ASSOC_XFRM and rel.target == a.target:
+                    if rel.type in (ASSOC_XFRM, ASSOC_APND) and rel.target == a.target:
                         t = self.store.get(rel.source)
                         if t and t.status == STATUS_APPROVED:
                             deprecate.append(rel.source)
-        self.store.add_submission(ss, sub.documents, sub.associations, deprecate)
-        self.audit.record("registry", "ITI-42 register", submission_set=ss.unique_id,
-                          documents=[d.unique_id for d in sub.documents], deprecated=deprecate)
-        return deprecate
+        return list(dict.fromkeys(deprecate))
+
+    # ---------------------------------------------------------- ITI-57
+    def update_availability(self, sub: Submission) -> dict[str, str]:
+        """ITI-57 Update Document Set, limited to UpdateAvailabilityStatus of DocumentEntries (XDS Metadata
+        Update). Validates every change before applying any of them; returns {entryUUID: new status}."""
+        ss = sub.submission_set
+        if sub.documents:
+            raise XdsError("XDSMetadataUpdateOperationError",
+                           "this registry supports only availability-status updates in ITI-57")
+        if not ss.unique_id or not ss.submission_time:
+            raise XdsError("XDSRegistryMetadataError", "SubmissionSet uniqueId and submissionTime are required")
+        if ss.source_id != self.policy.source_id:
+            raise XdsError("XDSRegistryMetadataError", f"unknown SubmissionSet.sourceId {ss.source_id}")
+        self.policy.check_patient(ss.patient_id, "SubmissionSet")
+        if self.store.submission_set_unique_id_exists(ss.unique_id):
+            raise XdsError("XDSDuplicateUniqueIdInRegistry", f"SubmissionSet uniqueId {ss.unique_id} exists")
+        updates = [a for a in sub.associations if a.type == ASSOC_UPDATE_AVAILABILITY]
+        if not updates:
+            raise XdsError("XDSMetadataUpdateOperationError", "no UpdateAvailabilityStatus association")
+        changes: dict[str, str] = {}
+        for a in updates:
+            if a.source != ss.entry_uuid:
+                raise XdsError("XDSMetadataUpdateError", "UpdateAvailabilityStatus sourceObject must be the "
+                                                        "SubmissionSet", a.entry_uuid)
+            orig, new = (a.slots.get("OriginalStatus") or [""])[0], (a.slots.get("NewStatus") or [""])[0]
+            if {orig, new} - {STATUS_APPROVED, STATUS_DEPRECATED} or orig == new:
+                raise XdsError("XDSMetadataUpdateError", f"unsupported status change {orig!r} -> {new!r}",
+                               a.entry_uuid)
+            de = self.store.get(a.target)
+            if de is None:
+                raise XdsError("UnresolvedReferenceException", f"DocumentEntry {a.target} not found", a.target)
+            if de.patient_id != ss.patient_id:
+                raise XdsError("XDSPatientIdDoesNotMatch", "DocumentEntry and SubmissionSet patientId differ",
+                               a.target)
+            if de.status != orig:
+                raise XdsError("XDSMetadataUpdateError", f"OriginalStatus {orig} does not match current status "
+                                                        f"{de.status}", a.target)
+            changes[a.target] = new
+        self.store.update_status(ss, sub.associations, changes)
+        self.audit.record("registry", "ITI-57 update availability status", submission_set=ss.unique_id,
+                          changes={k: v.rsplit(":", 1)[-1] for k, v in changes.items()})
+        return changes
 
     # ---------------------------------------------------------- ITI-18
     def find_documents(self, patient_cx: str, statuses: list[str],
@@ -185,9 +239,8 @@ class Repository:
                 raise XdsError("XDSDuplicateUniqueIdInRegistry", f"uniqueId {de.unique_id} already stored",
                                de.entry_uuid)
             de.hash, de.size, de.repository_unique_id = h, size, self.unique_id
-        # Validate everything with the registry policy before writing bytes.
-        for de in sub.documents:
-            self.registry.policy.check_entry(de)
+        # Validate the whole submission with the registry before writing any bytes (atomic issuance).
+        self.registry.validate(sub)
         for de in sub.documents:
             self.objects.put(de.unique_id, sub.contents[de.entry_uuid], de.mime_type)
         self.audit.record("repository", "ITI-41 store", documents=[d.unique_id for d in sub.documents])

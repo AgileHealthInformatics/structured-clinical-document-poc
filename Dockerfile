@@ -12,6 +12,7 @@ COPY pyproject.toml requirements.lock README.md LICENSE NOTICE.md ./
 COPY src ./src
 COPY config ./config
 COPY fixtures ./fixtures
+COPY conformance ./conformance
 RUN pip install --no-cache-dir -r requirements.lock . \
  && useradd --system --uid 10001 --home /app scdpoc \
  && mkdir -p /data && chown scdpoc /data

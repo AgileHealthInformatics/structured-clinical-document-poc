@@ -121,9 +121,10 @@ def test_at06_xds_publish_query_retrieve(client, published):
 def test_at07_mhd_discovery_matches_xds(client, published):
     disc = client.get("/api/demo/discover/amara-okafor").json()
     assert disc["equivalent"] is True
-    mhd = {r["id"]: r for r in disc["mhd"]["results"]}
+    mhd = {r["entryUUID"]: r for r in disc["mhd"]["results"]}
     for x in disc["xds"]["results"]:
-        m = mhd[x["entryUUID"].removeprefix("urn:uuid:")]
+        m = mhd[x["entryUUID"]]
+        assert m["id"] != x["entryUUID"].removeprefix("urn:uuid:"), "resource id is server-assigned (MET-08)"
         assert m["masterIdentifier"] == f"urn:oid:{x['uniqueId']}"
         assert m["contentType"] == x["mimeType"] and m["format"] == x["formatCode"]
 
@@ -132,7 +133,7 @@ def test_at08_sips_direct_retrieval(client, published):
     iss = published["publication"]["issuance"]
     q = client.get("/fhir/DocumentReference", params={
         "patient.identifier": "urn:oid:2.999.1.1|SYN-000101",
-        "format": "http://ihe.net/fhir/ihe.formatcode.fhir/CodeSystem/formatcode|urn:ihe:pcc:ips:2020"})
+        "format": "urn:ietf:rfc:3986|http://hl7.org/fhir/uv/ips/StructureDefinition/Bundle-uv-ips"})
     entries = q.json()["entry"]
     assert len(entries) == 1
     att = entries[0]["resource"]["content"][0]["attachment"]

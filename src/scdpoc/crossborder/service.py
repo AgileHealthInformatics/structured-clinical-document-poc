@@ -28,7 +28,7 @@ from . import xcpd
 from .initiating import InitiatingGateway
 from .translate import localise, missing_codes
 
-IPS_FORMAT = "urn:ihe:pcc:ips:2020"
+IPS_FORMAT = "http://hl7.org/fhir/uv/ips/StructureDefinition/Bundle-uv-ips"
 APPROVED = "urn:oasis:names:tc:ebxml-regrep:StatusType:Approved"
 DEPRECATED = "urn:oasis:names:tc:ebxml-regrep:StatusType:Deprecated"
 
@@ -126,7 +126,8 @@ class JurisdictionB:
         checks = self._verify(data, mime, de, link)
         received = {"uniqueId": de.unique_id, "receivedAt": _now().isoformat(), "bytes": len(data),
                     "sha256": sha256(data), "checksPassed": all(c["passed"] for c in checks),
-                    "documentUrn": json.loads(data).get("identifier", {}).get("value")}
+                    "documentUrn": json.loads(data).get("identifier", {}).get("value"),
+                    "provenance": provenance_from_ips(json.loads(data))}
         if not self.work.exists("received", _safe(de.unique_id), "ips.json"):
             self.work.put_bytes("received", _safe(de.unique_id), "ips.json", data)
             self.work.save("received", _safe(de.unique_id), {**received, "metadata": asdict(de),
@@ -172,6 +173,17 @@ class JurisdictionB:
             add("VB-4", "Received IPS is parseable JSON", False, "valid IPS", str(exc))
         add("VB-6", "Document is current in the home community", de.status == APPROVED, "Approved",
             de.status.rsplit(":", 1)[-1])
+        try:
+            prov = provenance_from_ips(json.loads(data))
+            missing = [k for k in ("author", "custodian", "issuingOrganisation", "clinicalContentDate",
+                                   "documentIdentifier") if not prov.get(k)]
+            add("VB-7", "Document provenance established from the IPS alone (author, custodian, issuing "
+                        "organisation, content date, identifiers)", not missing, "all present",
+                "missing: " + ", ".join(missing) if missing else
+                f"author {', '.join(prov['author'])}; custodian {prov['custodian']}; "
+                f"{prov['assurance']}")
+        except (ValueError, KeyError) as exc:
+            add("VB-7", "Document provenance established from the IPS alone", False, "provenance", str(exc))
         return out
 
     def _current(self, key: str) -> tuple[dict, bytes, dict]:
@@ -182,21 +194,50 @@ class JurisdictionB:
         rec = self.work.load("received", _safe(uid))
         return state, self.work.get_bytes("received", _safe(uid), "ips.json"), rec
 
+    HOME_STATUS = {"current": "current", "replaced": "no longer current: replaced by a newer summary",
+                   "withdrawn": "no longer current: withdrawn by the issuer",
+                   "unknown": "no longer current: reason unknown"}
+
+    def home_status(self, key: str) -> dict:
+        """XB-09 / LIF-12: ask the home community, by identifier, whether the summary held here is still current, and
+        if not, whether it was replaced (an RPLC successor exists) or withdrawn (none exists)."""
+        state, _, rec = self._current(key)
+        home = state["link"]["homeCommunityId"]
+        docs, ex = self.gw.get_documents(rec["uniqueId"], home)
+        if not docs:
+            status = "unknown"
+        elif docs[0].status == APPROVED:
+            status = "current"
+        else:
+            related, assocs, _ = self.gw.get_related(rec["uniqueId"], home)
+            me = docs[0].entry_uuid
+            status = "replaced" if any(a.target == me and a.type.endswith("RPLC") for a in assocs) else "withdrawn"
+        state["homeStatus"] = {"status": status, "checkedAt": _now().isoformat()}
+        self._save_state(key, state)
+        return {"uniqueId": rec["uniqueId"], "status": status, "display": self.HOME_STATUS[status],
+                "exchange": asdict(ex)}
+
     def _meta(self, state: dict, rec: dict, report) -> list[tuple[str, str]]:
         link = state["link"]
         n_ok, n_all = len(report.translated), len(report.translated) + len(report.untranslated)
-        return [(self.lab["local_identifier"], link["localId"]),
+        hs = (state.get("homeStatus") or {}).get("status")
+        status_rows = [(self.lab.get("home_status", "Status in the home community"),
+                        self.lab.get("home_status_values", {}).get(hs, self.HOME_STATUS[hs]))] if hs else []
+        return status_rows + [(self.lab["local_identifier"], link["localId"]),
                 (self.lab["provenance"], f"{self.comm['home']['name']} ({link['homeCommunityId']}) via XCA"),
                 (self.lab["retrieved"], rec["receivedAt"]),
                 (self.lab["coverage"], f"{n_ok}/{n_all}")]
 
     # ----------------------------------------------------- B3 local rendition
     def render(self, key: str) -> dict:
+        self.home_status(key)
         state, data, rec = self._current(key)
         view, report, labels = localise(json.loads(data), self.designations)
         html = render_html(view, labels, self._meta(state, rec, report))
         return {"language": labels.lang, "html": html, "translation": report.to_dict(),
-                "documentUrn": rec["documentUrn"],
+                "designations": {"resource": self.designations.get("resource"),
+                                 "version": self.designations.get("version")},
+                "documentUrn": rec["documentUrn"], "homeStatus": state.get("homeStatus"),
                 "note": "Rendition for a clinician in Jurisdiction B, generated from the received IPS. The legal "
                         "record remains Jurisdiction A's preserved envelope, which never crossed the border."}
 
@@ -222,6 +263,8 @@ class JurisdictionB:
         missing = missing_codes(view, page_text(env.pdf_bytes))
         out = {"uniqueId": rec["uniqueId"], "envelopeSha256": env.pdf_sha256, "bytes": len(env.pdf_bytes),
                "language": labels.lang,
+               "designations": {"resource": self.designations.get("resource"),
+                                "version": self.designations.get("version")},
                "checks": [
                    {"id": "CB-1", "label": "Embedded IPS byte-identical to what was received",
                     "passed": emb.data == data},
@@ -239,6 +282,52 @@ class JurisdictionB:
     def custody_pdf(self, key: str) -> bytes:
         _, _, rec = self._current(key)
         return self.work.get_bytes("received", _safe(rec["uniqueId"]), "custody.pdf")
+
+
+def provenance_from_ips(bundle: dict) -> dict:
+    """Profile PROV-06 / XB-04: document-level provenance a receiver can establish from the exchanged IPS
+    alone, without the issuer's envelope or issuance record. Entry-level provenance (who recorded or asserted
+    each clinical statement) is reported where the source carries it and is not inferred from the document
+    author."""
+    idx = {e["fullUrl"]: e["resource"] for e in bundle.get("entry", [])}
+    comp = bundle["entry"][0]["resource"]
+
+    def name(ref: str | None) -> str:
+        r = idx.get(ref or "", {})
+        if r.get("resourceType") == "Organization":
+            return r.get("name", "")
+        if r.get("resourceType") == "Device":
+            return ((r.get("deviceName") or [{}])[0]).get("name", "")
+        n = (r.get("name") or [{}])[0]
+        return n.get("text") or " ".join([*n.get("given", []), n.get("family", "")]).strip()
+
+    entry_level = {}
+    for e in bundle.get("entry", [])[1:]:
+        r = e["resource"]
+        for el in ("recorder", "asserter", "informationSource", "performer"):
+            refs = r.get(el) if isinstance(r.get(el), list) else [r.get(el)] if r.get(el) else []
+            for ref in refs:
+                ref = ref.get("actor", ref) if isinstance(ref, dict) else {}
+                if ref.get("reference"):
+                    entry_level.setdefault(r["resourceType"], set()).add(f"{el}: {name(ref['reference'])}")
+    custodian = name((comp.get("custodian") or {}).get("reference"))
+    return {
+        "documentIdentifier": (bundle.get("identifier") or {}).get("value"),
+        "seriesIdentifier": (comp.get("identifier") or {}).get("value"),
+        "author": [name(a.get("reference")) for a in comp.get("author", [])],
+        "authorTypes": [idx.get(a.get("reference"), {}).get("resourceType") for a in comp.get("author", [])],
+        "custodian": custodian,
+        "issuingOrganisation": custodian,
+        "clinicalContentDate": comp.get("date"),
+        "status": comp.get("status"),
+        "attester": [{"party": name((a.get("party") or {}).get("reference")), "mode": a.get("mode"),
+                      "time": a.get("time")} for a in comp.get("attester", [])],
+        "assurance": "attested clinical issuance" if comp.get("attester") else
+                     "machine-generated preserved snapshot (no attestation claimed)",
+        "replaces": [r.get("targetIdentifier", {}).get("value") for r in comp.get("relatesTo", [])
+                     if r.get("code") == "replaces"],
+        "entryLevel": {k: sorted(v) for k, v in entry_level.items()},
+    }
 
 
 def _safe(uid: str) -> str:

@@ -40,7 +40,7 @@ def _entry(svc, rep="envelope"):
 def test_registry_rejects_ips_format_code_on_pdf(client):
     svc = client.app.state.service
     de = _entry(svc)
-    de.codes["formatCode"] = Code("urn:ihe:pcc:ips:2020", "1.3.6.1.4.1.19376.1.2.3")
+    de.codes["formatCode"] = Code("http://hl7.org/fhir/uv/ips/StructureDefinition/Bundle-uv-ips", "urn:ietf:rfc:3986")
     sub = svc._submission(de.patient_id, [de], [], {de.entry_uuid: b"%PDF-1.7 test"})
     ex = svc.xds.provide_and_register(sub)
     assert ex.status.endswith("Failure")

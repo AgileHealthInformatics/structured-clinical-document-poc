@@ -17,7 +17,7 @@ from dataclasses import asdict, dataclass
 import pikepdf
 from pikepdf import Name
 
-from .ips.view import build_view
+from . import fidelity
 from .pdfa.extract import extract_ips, page_text
 
 
@@ -71,12 +71,13 @@ def verify_envelope(pdf_bytes: bytes, *, document_urn: str, pdf_sha256: str, ips
         doc_id = bundle.get("identifier", {}).get("value", "")
         checks.append(IntegrityCheck("IC-6", "Embedded IPS document identifier matches registry entry",
                                      doc_id == document_urn, document_urn, doc_id))
-        view = build_view(bundle)
-        text = _norm(page_text(pdf_bytes))
-        missing = [f for f in view.visible_facts() if _norm(f) not in text]
-        checks.append(IntegrityCheck("IC-7", "Every clinical fact in the embedded IPS is visible on the pages",
-                                     not missing, "0 missing facts",
-                                     f"{len(missing)} missing" + (f": {missing[:3]}" if missing else "")))
+        fid = fidelity.check(bundle, page_text(pdf_bytes))
+        problems = [f"missing {m['element']}={m['text']!r}" for m in fid.missing] + \
+                   [f"misplaced {m['element']}={m['text']!r}" for m in fid.misplaced] + \
+                   [f"foreign code {m['code']}" for m in fid.foreign_codes]
+        checks.append(IntegrityCheck("IC-7", "Pages satisfy the rendition fidelity contract for the embedded IPS",
+                                     fid.passed, f"{fid.expected} contract facts, 0 problems",
+                                     f"{len(problems)} problems" + (f": {problems[:3]}" if problems else "")))
     except Exception as exc:
         checks.append(IntegrityCheck("IC-6", "Embedded IPS is parseable", False, "valid JSON IPS", str(exc)))
     return checks
@@ -108,7 +109,7 @@ def tamper_embedded_payload(pdf_bytes: bytes) -> tuple[bytes, str]:
     stream.write(new)
     stream[Name.Params][Name.Size] = len(new)
     out = io.BytesIO()
-    pdf.save(out)
+    pdf.save(out, deterministic_id=True)
     return out.getvalue(), f"Embedded IPS altered ({changed}); visible pages unchanged"
 
 

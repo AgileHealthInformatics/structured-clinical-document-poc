@@ -29,3 +29,5 @@ preserved document is untrustworthy (finding F-004, severity Critical).
 - The rendition check is text-based. It detects omitted or altered facts; it
   does not judge layout or clinical presentation quality.
 - Adopters replacing the renderer must keep the one-way rule and the IC-7 check.
+- From 0.3.0 (ADR-008) the IC-7 check is the profile's fidelity contract, derived from the FHIR resources
+  independently of the renderer, and the registry records the envelope as a transformation (XFRM) of the IPS.

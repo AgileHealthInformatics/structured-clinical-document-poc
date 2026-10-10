@@ -1,0 +1,769 @@
+{
+  "resourceType": "Bundle",
+  "id": "56454c48-ef57-5719-b6f2-f175c432b75b",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/uv/ips/StructureDefinition/Bundle-uv-ips"
+    ]
+  },
+  "language": "en-GB",
+  "identifier": {
+    "system": "urn:ietf:rfc:3986",
+    "value": "urn:uuid:56454c48-ef57-5719-b6f2-f175c432b75b"
+  },
+  "type": "document",
+  "timestamp": "2026-10-08T12:00:00Z",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:adbb6e2e-e75a-5a48-a7a2-7b6292b32bd5",
+      "resource": {
+        "resourceType": "Composition",
+        "id": "adbb6e2e-e75a-5a48-a7a2-7b6292b32bd5",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/ips/StructureDefinition/Composition-uv-ips"
+          ]
+        },
+        "language": "en-GB",
+        "identifier": {
+          "system": "urn:oid:2.999.1.7",
+          "value": "362228b1-7872-57f7-b17b-909e18bbd382"
+        },
+        "status": "final",
+        "type": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "60591-5",
+              "display": "Patient summary Document"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:b37c9a91-1755-5c1b-b600-de50f63b1a4b"
+        },
+        "date": "2026-10-08T12:00:00Z",
+        "author": [
+          {
+            "reference": "urn:uuid:b1a89164-b4d0-554c-a740-511ea1a0b713"
+          }
+        ],
+        "title": "International Patient Summary",
+        "confidentiality": "N",
+        "custodian": {
+          "reference": "urn:uuid:155f8110-2cd4-5411-aa72-865d264f7c7e"
+        },
+        "section": [
+          {
+            "title": "Problem list",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "11450-4",
+                  "display": "Problem list"
+                }
+              ]
+            },
+            "entry": [
+              {
+                "reference": "urn:uuid:cfb8122a-8394-5f9d-9815-07c757b4675e"
+              },
+              {
+                "reference": "urn:uuid:b1537cc1-d61c-5ccf-916f-4a893a3d010f"
+              }
+            ],
+            "text": {
+              "status": "generated",
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table><thead><tr><th>Problem</th><th>Code</th><th>Status</th><th>Severity</th><th>Onset</th><th>Details</th></tr></thead><tbody><tr><td>Hypertensive disorder, systemic arterial</td><td>38341003</td><td>active · confirmed</td><td>Moderate</td><td>2015-06-02</td><td></td></tr><tr><td>Diabetes mellitus type 2</td><td>44054006</td><td>active · confirmed</td><td></td><td>2019-11-20</td><td>Managed with diet alone until late 2019.</td></tr></tbody></table></div>"
+            }
+          },
+          {
+            "title": "Allergies and intolerances",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "48765-2",
+                  "display": "Allergies and intolerances"
+                }
+              ]
+            },
+            "entry": [
+              {
+                "reference": "urn:uuid:4edc9384-d27b-5a7d-966d-15f282e57431"
+              }
+            ],
+            "text": {
+              "status": "generated",
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table><thead><tr><th>Substance / situation</th><th>Code</th><th>Status</th><th>Criticality</th><th>Reaction</th><th>Details</th></tr></thead><tbody><tr><td>Penicillin</td><td>764146007</td><td>active · confirmed</td><td>high</td><td>Eruption of skin · moderate</td><td>allergy · medication · Rash after amoxicillin in childhood.</td></tr></tbody></table></div>"
+            }
+          },
+          {
+            "title": "Medication summary",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "10160-0",
+                  "display": "Medication summary"
+                }
+              ]
+            },
+            "entry": [
+              {
+                "reference": "urn:uuid:1201d793-9f0d-5936-b0ee-3b54d1137fab"
+              },
+              {
+                "reference": "urn:uuid:e5007cfd-68e8-5dba-a5b2-bcf8147f2819"
+              }
+            ],
+            "text": {
+              "status": "generated",
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table><thead><tr><th>Medicine</th><th>ATC</th><th>Status</th><th>Dosage</th><th>Since</th><th>Details</th></tr></thead><tbody><tr><td>ramipril</td><td>C09AA05</td><td>active</td><td>5 mg orally once daily (dose 5 mg · Oral use · once per day)</td><td>2015-06-10</td><td></td></tr><tr><td>metformin</td><td>A10BA02</td><td>active</td><td>500 mg orally twice daily with meals (dose 500 mg · Oral use · twice per day · max 2000 mg per 1 d · With or after food · Take with breakfast and the evening meal)</td><td>2019-12-01</td><td></td></tr></tbody></table></div>"
+            }
+          },
+          {
+            "title": "History of immunizations",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "11369-6",
+                  "display": "History of immunizations"
+                }
+              ]
+            },
+            "entry": [
+              {
+                "reference": "urn:uuid:f3f00414-2be8-519b-9cd7-45262fa98039"
+              }
+            ],
+            "text": {
+              "status": "generated",
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table><thead><tr><th>Vaccine</th><th>ATC</th><th>Status</th><th>Date</th><th>Details</th></tr></thead><tbody><tr><td>influenza vaccines</td><td>J07BB</td><td>completed</td><td>2025-10-14</td><td>dose 1</td></tr></tbody></table></div>"
+            }
+          },
+          {
+            "title": "Results",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "30954-2",
+                  "display": "Results"
+                }
+              ]
+            },
+            "entry": [
+              {
+                "reference": "urn:uuid:02905d01-0ca8-599f-a8e5-d1dad96a0bc9"
+              },
+              {
+                "reference": "urn:uuid:9fd29cb3-117f-5300-a230-bc4c5f26b001"
+              }
+            ],
+            "text": {
+              "status": "generated",
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><table><thead><tr><th>Test</th><th>LOINC</th><th>Result</th><th>Status</th><th>Date</th><th>Details</th></tr></thead><tbody><tr><td>Hemoglobin A1c/Hemoglobin.total in Blood</td><td>4548-4</td><td>7.1 % · High</td><td>final</td><td>2026-08-18</td><td>ref 4 to 6 %</td></tr><tr><td>Creatinine [Moles/volume] in Serum or Plasma</td><td>14682-9</td><td>78 umol/L</td><td>final</td><td>2026-08-18</td><td>ref 45 to 84 umol/L</td></tr></tbody></table></div>"
+            }
+          },
+          {
+            "title": "Plan of care",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "18776-5",
+                  "display": "Plan of care note"
+                }
+              ]
+            },
+            "text": {
+              "status": "additional",
+              "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>Review blood pressure and HbA1c in three months. Annual diabetic eye screening due in March.</p></div>"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:b37c9a91-1755-5c1b-b600-de50f63b1a4b",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "b37c9a91-1755-5c1b-b600-de50f63b1a4b",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/ips/StructureDefinition/Patient-uv-ips"
+          ]
+        },
+        "identifier": [
+          {
+            "system": "urn:oid:2.999.1.1",
+            "value": "SYN-000101"
+          }
+        ],
+        "name": [
+          {
+            "text": "Amara Okafor",
+            "family": "Okafor",
+            "given": [
+              "Amara"
+            ]
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1971-03-14",
+        "address": [
+          {
+            "country": "IE"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:155f8110-2cd4-5411-aa72-865d264f7c7e",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "155f8110-2cd4-5411-aa72-865d264f7c7e",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/ips/StructureDefinition/Organization-uv-ips"
+          ]
+        },
+        "identifier": [
+          {
+            "system": "urn:oid:2.999.1.8",
+            "value": "SYN-ORG-1"
+          }
+        ],
+        "name": "Synthetic Health Organisation"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:b1a89164-b4d0-554c-a740-511ea1a0b713",
+      "resource": {
+        "resourceType": "Device",
+        "id": "b1a89164-b4d0-554c-a740-511ea1a0b713",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/ips/StructureDefinition/Device-uv-ips"
+          ]
+        },
+        "identifier": [
+          {
+            "system": "urn:oid:2.999.1.11",
+            "value": "scdpoc-summary-generator"
+          }
+        ],
+        "deviceName": [
+          {
+            "name": "SCD-PoC summary generator",
+            "type": "manufacturer-name"
+          }
+        ],
+        "owner": {
+          "reference": "urn:uuid:155f8110-2cd4-5411-aa72-865d264f7c7e"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:cfb8122a-8394-5f9d-9815-07c757b4675e",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cfb8122a-8394-5f9d-9815-07c757b4675e",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/ips/StructureDefinition/Condition-uv-ips"
+          ]
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "problem-list-item",
+                "display": "Problem List Item"
+              }
+            ]
+          }
+        ],
+        "severity": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "6736007",
+              "display": "Moderate"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "38341003",
+              "display": "Hypertensive disorder, systemic arterial"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:b37c9a91-1755-5c1b-b600-de50f63b1a4b"
+        },
+        "onsetDateTime": "2015-06-02"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:b1537cc1-d61c-5ccf-916f-4a893a3d010f",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "b1537cc1-d61c-5ccf-916f-4a893a3d010f",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/ips/StructureDefinition/Condition-uv-ips"
+          ]
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "problem-list-item",
+                "display": "Problem List Item"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "44054006",
+              "display": "Diabetes mellitus type 2"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:b37c9a91-1755-5c1b-b600-de50f63b1a4b"
+        },
+        "onsetDateTime": "2019-11-20",
+        "note": [
+          {
+            "text": "Managed with diet alone until late 2019."
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:4edc9384-d27b-5a7d-966d-15f282e57431",
+      "resource": {
+        "resourceType": "AllergyIntolerance",
+        "id": "4edc9384-d27b-5a7d-966d-15f282e57431",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/ips/StructureDefinition/AllergyIntolerance-uv-ips"
+          ]
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "type": "allergy",
+        "criticality": "high",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "764146007",
+              "display": "Penicillin"
+            }
+          ]
+        },
+        "patient": {
+          "reference": "urn:uuid:b37c9a91-1755-5c1b-b600-de50f63b1a4b"
+        },
+        "reaction": [
+          {
+            "manifestation": [
+              {
+                "coding": [
+                  {
+                    "system": "http://snomed.info/sct",
+                    "code": "271807003",
+                    "display": "Eruption of skin"
+                  }
+                ]
+              }
+            ],
+            "severity": "moderate"
+          }
+        ],
+        "category": [
+          "medication"
+        ],
+        "note": [
+          {
+            "text": "Rash after amoxicillin in childhood."
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:1201d793-9f0d-5936-b0ee-3b54d1137fab",
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "id": "1201d793-9f0d-5936-b0ee-3b54d1137fab",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/ips/StructureDefinition/MedicationStatement-uv-ips"
+          ]
+        },
+        "status": "active",
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.whocc.no/atc",
+              "code": "C09AA05",
+              "display": "ramipril"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:b37c9a91-1755-5c1b-b600-de50f63b1a4b"
+        },
+        "effectivePeriod": {
+          "start": "2015-06-10"
+        },
+        "dosage": [
+          {
+            "text": "5 mg orally once daily",
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "route": {
+              "coding": [
+                {
+                  "system": "http://standardterms.edqm.eu",
+                  "code": "20053000",
+                  "display": "Oral use"
+                }
+              ]
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 5,
+                  "unit": "mg",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "mg"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e5007cfd-68e8-5dba-a5b2-bcf8147f2819",
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "id": "e5007cfd-68e8-5dba-a5b2-bcf8147f2819",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/ips/StructureDefinition/MedicationStatement-uv-ips"
+          ]
+        },
+        "status": "active",
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.whocc.no/atc",
+              "code": "A10BA02",
+              "display": "metformin"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:b37c9a91-1755-5c1b-b600-de50f63b1a4b"
+        },
+        "effectivePeriod": {
+          "start": "2019-12-01"
+        },
+        "dosage": [
+          {
+            "text": "500 mg orally twice daily with meals",
+            "timing": {
+              "repeat": {
+                "frequency": 2,
+                "period": 1,
+                "periodUnit": "d"
+              }
+            },
+            "route": {
+              "coding": [
+                {
+                  "system": "http://standardterms.edqm.eu",
+                  "code": "20053000",
+                  "display": "Oral use"
+                }
+              ]
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 500,
+                  "unit": "mg",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "mg"
+                }
+              }
+            ],
+            "additionalInstruction": [
+              {
+                "coding": [
+                  {
+                    "system": "http://snomed.info/sct",
+                    "code": "311504000",
+                    "display": "With or after food"
+                  }
+                ]
+              }
+            ],
+            "patientInstruction": "Take with breakfast and the evening meal",
+            "maxDosePerPeriod": {
+              "numerator": {
+                "value": 2000,
+                "unit": "mg",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg"
+              },
+              "denominator": {
+                "value": 1,
+                "unit": "d",
+                "system": "http://unitsofmeasure.org",
+                "code": "d"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:f3f00414-2be8-519b-9cd7-45262fa98039",
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "f3f00414-2be8-519b-9cd7-45262fa98039",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/ips/StructureDefinition/Immunization-uv-ips"
+          ]
+        },
+        "status": "completed",
+        "vaccineCode": {
+          "coding": [
+            {
+              "system": "http://www.whocc.no/atc",
+              "code": "J07BB",
+              "display": "influenza vaccines"
+            }
+          ]
+        },
+        "patient": {
+          "reference": "urn:uuid:b37c9a91-1755-5c1b-b600-de50f63b1a4b"
+        },
+        "occurrenceDateTime": "2025-10-14",
+        "protocolApplied": [
+          {
+            "doseNumberPositiveInt": 1
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:02905d01-0ca8-599f-a8e5-d1dad96a0bc9",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "02905d01-0ca8-599f-a8e5-d1dad96a0bc9",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/ips/StructureDefinition/Observation-results-laboratory-pathology-uv-ips"
+          ]
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "4548-4",
+              "display": "Hemoglobin A1c/Hemoglobin.total in Blood"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:b37c9a91-1755-5c1b-b600-de50f63b1a4b"
+        },
+        "effectiveDateTime": "2026-08-18",
+        "performer": [
+          {
+            "reference": "urn:uuid:155f8110-2cd4-5411-aa72-865d264f7c7e"
+          }
+        ],
+        "valueQuantity": {
+          "value": 7.1,
+          "unit": "%",
+          "system": "http://unitsofmeasure.org",
+          "code": "%"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "H",
+                "display": "High"
+              }
+            ]
+          }
+        ],
+        "referenceRange": [
+          {
+            "low": {
+              "value": 4.0,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "high": {
+              "value": 6.0,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:9fd29cb3-117f-5300-a230-bc4c5f26b001",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "9fd29cb3-117f-5300-a230-bc4c5f26b001",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/ips/StructureDefinition/Observation-results-laboratory-pathology-uv-ips"
+          ]
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "14682-9",
+              "display": "Creatinine [Moles/volume] in Serum or Plasma"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:b37c9a91-1755-5c1b-b600-de50f63b1a4b"
+        },
+        "effectiveDateTime": "2026-08-18",
+        "performer": [
+          {
+            "reference": "urn:uuid:155f8110-2cd4-5411-aa72-865d264f7c7e"
+          }
+        ],
+        "valueQuantity": {
+          "value": 78,
+          "unit": "umol/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "umol/L"
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 45,
+              "unit": "umol/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "umol/L"
+            },
+            "high": {
+              "value": 84,
+              "unit": "umol/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "umol/L"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

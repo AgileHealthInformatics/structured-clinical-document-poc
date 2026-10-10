@@ -5,7 +5,7 @@ from lxml import etree
 
 from ..xds.client import Exchange, _errors, _pretty
 from ..xds.ebrim import parse_document_entry
-from ..xds.model import NS, SQ_FIND_DOCUMENTS, DocumentEntry
+from ..xds.model import NS, SQ_FIND_DOCUMENTS, SQ_GET_DOCUMENTS, SQ_GET_RELATED, Association, DocumentEntry
 from ..xds.soap import envelope, parse_message, to_bytes
 from . import xcpd
 from .gateway import ITI38, ITI39
@@ -50,6 +50,31 @@ class InitiatingGateway:
         docs = [parse_document_entry(eo) for eo in eos]
         homes = [eo.get("home", "") for eo in eos]
         return docs, homes, Exchange("ITI-38", _pretty(req), _pretty(resp), resp.get("status", ""), _errors(resp))
+
+    def _query(self, query_id: str, home: str, params: list[tuple[str, str]]):
+        req = etree.Element(q("query", "AdhocQueryRequest"), nsmap={"query": NS["query"], "rim": NS["rim"]})
+        etree.SubElement(req, q("query", "ResponseOption"), returnComposedObjects="true", returnType="LeafClass")
+        aq = etree.SubElement(req, q("rim", "AdhocQuery"), id=query_id, home=home)
+        for name, value in params:
+            s = etree.SubElement(aq, q("rim", "Slot"), name=name)
+            etree.SubElement(etree.SubElement(s, q("rim", "ValueList")), q("rim", "Value")).text = value
+        env = envelope(ITI38, req, to=self.xca_url)
+        _, ctype, body = self.post(self.xca_url, to_bytes(env), SOAP_CT)
+        resp = parse_message(body, ctype).body
+        docs = [parse_document_entry(eo) for eo in resp.iter(q("rim", "ExtrinsicObject"))]
+        assocs = [Association(a.get("id"), a.get("associationType"), a.get("sourceObject"), a.get("targetObject"))
+                  for a in resp.iter(q("rim", "Association"))]
+        return docs, assocs, Exchange("ITI-38", _pretty(req), _pretty(resp), resp.get("status", ""), _errors(resp))
+
+    def get_documents(self, unique_id: str, home: str):
+        """ITI-38 GetDocuments by uniqueId: metadata and availability status (XB-02.b)."""
+        docs, _, ex = self._query(SQ_GET_DOCUMENTS, home, [("$XDSDocumentEntryUniqueId", f"('{unique_id}')")])
+        return docs, ex
+
+    def get_related(self, unique_id: str, home: str):
+        """ITI-38 GetRelatedDocuments (RPLC): a successor means replaced; none means withdrawn (state mapping)."""
+        return self._query(SQ_GET_RELATED, home, [("$XDSDocumentEntryUniqueId", f"('{unique_id}')"),
+                                                  ("$AssociationTypes", "('urn:ihe:iti:2007:AssociationType:RPLC')")])
 
     def retrieve(self, home_community_id: str, repository_unique_id: str,
                  document_unique_id: str) -> tuple[bytes | None, str, Exchange]:

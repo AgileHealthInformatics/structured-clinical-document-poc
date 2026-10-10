@@ -52,7 +52,7 @@ def create_app(settings: Settings | None = None, http: Http | None = None) -> Fa
         return response
 
     app.include_router(xds_router(repository, registry))
-    app.include_router(mhd_router(registry, repository, settings, svc.on_demand_summary))
+    app.include_router(mhd_router(registry, repository, settings, svc.on_demand_summary, svc.lifecycle_state_of))
     app.include_router(demo_router(svc))
     # v0.2 cross-border simulation: A's responding gateway, B's orchestration (talks to A over HTTP only)
     app.include_router(gateway_router(settings, registry, repository))

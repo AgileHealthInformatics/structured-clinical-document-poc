@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scdpoc"
-version = "0.2.0"
+version = "0.5.0"
 description = "EHDS Structured Clinical Document PoC: FHIR IPS preserved in a PDF/A-3 envelope, shared via IHE XDS.b and MHD, with an EHDS export preview. Synthetic data only."
 readme = "README.md"
 license = "Apache-2.0"

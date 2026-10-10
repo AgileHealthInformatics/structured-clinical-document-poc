@@ -50,11 +50,11 @@ BANNER = colors.HexColor("#7a1f1f")
 HEAD_BG = colors.HexColor("#f1efe9")
 # Tables default to Helvetica for cell text; force the embedded font everywhere.
 COLUMN_FRACTIONS = {
-    "11450-4": [0.46, 0.16, 0.16, 0.22],
-    "48765-2": [0.36, 0.16, 0.18, 0.30],
-    "10160-0": [0.28, 0.12, 0.42, 0.18],
-    "11369-6": [0.50, 0.20, 0.30],
-    "30954-2": [0.44, 0.14, 0.20, 0.22],
+    "11450-4": [0.24, 0.13, 0.15, 0.11, 0.13, 0.24],
+    "48765-2": [0.18, 0.13, 0.16, 0.10, 0.20, 0.23],
+    "10160-0": [0.13, 0.12, 0.08, 0.35, 0.12, 0.20],
+    "11369-6": [0.32, 0.12, 0.14, 0.16, 0.26],
+    "30954-2": [0.24, 0.11, 0.16, 0.10, 0.14, 0.25],
 }
 _TABLE_FONT = ("FONT", (0, 0), (-1, -1), "Vera", 8.5)
 
@@ -66,6 +66,8 @@ def _styles() -> dict[str, ParagraphStyle]:
         "title": ParagraphStyle("title", parent=base, fontName="Vera-Bold", fontSize=17, leading=21),
         "h2": ParagraphStyle("h2", parent=base, fontName="Vera-Bold", fontSize=11.5, leading=15, spaceBefore=10),
         "cell": ParagraphStyle("cell", parent=base, fontSize=8.5, leading=11),
+        # Codes are never split across lines: a split code would read as two codes (profile REN-08).
+        "code": ParagraphStyle("code", parent=base, fontSize=8.5, leading=11, splitLongWords=0),
         "head": ParagraphStyle("head", parent=base, fontName="Vera-Bold", fontSize=8.5, leading=11),
         "empty": ParagraphStyle("empty", parent=base, fontName="Vera-Italic", textColor=MUTED),
         "banner": ParagraphStyle("banner", parent=base, fontName="Vera-Bold", fontSize=8, leading=10,
@@ -103,8 +105,11 @@ def render_pdf(view: SummaryView, attachment_name: str, labels: Labels = ENGLISH
     story += [banner, Spacer(1, 6 * mm), Paragraph(escape(view.title), st["title"]), Spacer(1, 3 * mm)]
 
     meta = [(labels.patient, view.patient_name), (labels.identifier, view.patient_id), (labels.dob, view.birth_date),
-            (labels.sex, view.gender), (labels.issued, view.issued), (labels.author, view.author),
-            (labels.custodian, view.custodian), (labels.document, view.document_id)]
+            (labels.sex, view.gender), (labels.content_time, view.content_time), (labels.issued, view.issued), (labels.author, view.author),
+            (labels.custodian, view.custodian), (labels.document, view.document_id), (labels.status, view.status),
+            (labels.assurance, view.assurance)]
+    if view.attester:
+        meta.append((labels.attester, view.attester))
     if view.replaces:
         meta.append((labels.replaces, view.replaces))
     meta += extra_meta or []
@@ -115,14 +120,24 @@ def render_pdf(view: SummaryView, attachment_name: str, labels: Labels = ENGLISH
                             ("TOPPADDING", (0, 0), (-1, -1), 1), ("LEFTPADDING", (0, 0), (-1, -1), 0)]))
     story += [mt, Spacer(1, 2 * mm)]
 
-    for s in view.sections:
-        block = [Paragraph(escape(s.title), st["h2"]), Spacer(1, 1.5 * mm)]
+    def flatten(secs, depth=0):
+        for sec in secs:
+            yield sec, depth
+            yield from flatten(sec.subsections, depth + 1)
+
+    for s, depth in flatten(view.sections):
+        title = escape(s.title) if depth == 0 else escape(s.title)
+        block = [Paragraph(title, st["h2"] if depth == 0 else st["head"]), Spacer(1, 1.5 * mm)]
+        if not s.empty_text and not s.rows:
+            story.append(KeepTogether(block))
+            continue
         if s.empty_text:
             block.append(Paragraph(escape(s.empty_text), st["empty"]))
         else:
             widths = [width * f for f in COLUMN_FRACTIONS.get(s.code, [1 / len(s.columns)] * len(s.columns))]
             data = [[Paragraph(escape(c), st["head"]) for c in s.columns]]
-            data += [[Paragraph(escape(v), st["cell"]) for v in r] for r in s.rows]
+            data += [[Paragraph(escape(v), st["code" if i == 1 and len(r) > 2 else "cell"]) for i, v in enumerate(r)]
+                     for r in s.rows]
             t = Table(data, colWidths=widths, repeatRows=1, hAlign="LEFT")
             t.setStyle(TableStyle([_TABLE_FONT,
                 ("BACKGROUND", (0, 0), (-1, 0), HEAD_BG), ("LINEBELOW", (0, 0), (-1, -1), 0.4, RULE),

@@ -12,6 +12,7 @@ from .model import (
     ITI18,
     ITI41,
     ITI43,
+    ITI57,
     NS,
     RESPONSE_FAILURE,
     RESPONSE_SUCCESS,
@@ -118,12 +119,23 @@ def build_router(repository: Repository, registry: Registry) -> APIRouter:
         body, ctype = build_mtom(env, ITI43 + "Response", parts)
         return Response(body, media_type=ctype)
 
-    @router.post("/xds/registry", summary="XDS.b Document Registry: ITI-18 Registry Stored Query (SOAP 1.2)")
+    @router.post("/xds/registry", summary="XDS.b Document Registry: ITI-18 Registry Stored Query and ITI-57 Update Document Set (SOAP 1.2)")
     async def registry_endpoint(request: Request) -> Response:
         try:
             msg = parse_message(await request.body(), request.headers.get("content-type", ""))
         except Exception as exc:
             return _fault(f"Malformed SOAP message: {exc}")
+        if msg.action == ITI57:
+            try:
+                sor = msg.body if etree.QName(msg.body).localname == "SubmitObjectsRequest" else None
+                if sor is None:
+                    raise XdsError("XDSRegistryError", "expected SubmitObjectsRequest")
+                registry.update_availability(parse_submit_objects_request(sor))
+                rr = _registry_response()
+            except XdsError as exc:
+                registry.audit.record("registry", "ITI-57 rejected", code=exc.code, message=exc.message)
+                rr = _registry_response([exc])
+            return _soap(rr, ITI57, msg.message_id)
         if msg.action != ITI18:
             return _fault(f"Unsupported action {msg.action!r} on registry endpoint")
         resp = etree.Element(q("query", "AdhocQueryResponse"),

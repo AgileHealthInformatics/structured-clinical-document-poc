@@ -39,3 +39,10 @@ def published(client):
     p = client.post(f"/api/demo/publish/{d['draftId']}")
     p.raise_for_status()
     return {"draft": d, "publication": p.json()}
+
+
+def mhd_doc(client, entry_uuid: str) -> dict:
+    """ITI-67 search by the entryUUID identifier slice (the resource id is server-assigned)."""
+    b = client.get("/fhir/DocumentReference", params={"identifier": f"urn:ietf:rfc:3986|{entry_uuid}"}).json()
+    assert b["total"] == 1, b
+    return b["entry"][0]["resource"]

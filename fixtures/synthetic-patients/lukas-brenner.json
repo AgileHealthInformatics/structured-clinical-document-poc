@@ -5,18 +5,126 @@
   "patient": {
     "identifier": "SYN-000102",
     "family": "Brenner",
-    "given": ["Lukas"],
+    "given": [
+      "Lukas"
+    ],
     "gender": "male",
     "birthDate": "1994-09-02",
     "country": "AT"
   },
   "problems": [
-    { "snomed": "195967001", "display": "Asthma", "onset": "2004-05-11", "clinicalStatus": "active" }
+    {
+      "snomed": "195967001",
+      "display": "Asthma",
+      "onset": "2004-05-11",
+      "clinicalStatus": "active",
+      "verification": "confirmed",
+      "severity": {
+        "snomed": "255604002",
+        "display": "Mild"
+      },
+      "fhir": {
+        "note": [
+          {
+            "text": "Symptoms mainly on exercise and in cold weather."
+          }
+        ]
+      }
+    }
   ],
   "allergies_none_known": true,
   "medications": [
-    { "atc": "R03AC02", "display": "salbutamol", "dosage": "100 micrograms inhaled as required, up to 4 times daily", "start": "2004-05-11", "status": "active" },
-    { "atc": "R03BA02", "display": "budesonide", "dosage": "200 micrograms inhaled twice daily", "start": "2018-02-03", "status": "active" }
+    {
+      "atc": "R03AC02",
+      "display": "salbutamol",
+      "dosage": "100 micrograms inhaled as required, up to 4 times daily",
+      "start": "2004-05-11",
+      "status": "active",
+      "dose": {
+        "value": 100,
+        "unit": "ug"
+      },
+      "route": {
+        "edqm": "20020000",
+        "display": "Inhalation use"
+      },
+      "asNeeded": true,
+      "fhir_dosage": {
+        "asNeededBoolean": null,
+        "asNeededCodeableConcept": {
+          "text": "wheeze or breathlessness"
+        }
+      }
+    },
+    {
+      "atc": "R03BA02",
+      "display": "budesonide",
+      "dosage": "200 micrograms inhaled twice daily",
+      "start": "2018-02-03",
+      "status": "active",
+      "dose": {
+        "value": 200,
+        "unit": "ug"
+      },
+      "route": {
+        "edqm": "20020000",
+        "display": "Inhalation use"
+      },
+      "timing": {
+        "frequency": 2,
+        "period": 1,
+        "periodUnit": "d"
+      },
+      "fhir_dosage": {
+        "method": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "422145002",
+              "display": "Inhale"
+            }
+          ]
+        },
+        "additionalInstruction": [
+          {
+            "text": "Rinse mouth after use"
+          }
+        ]
+      }
+    },
+    {
+      "atc": "R03DC03",
+      "display": "montelukast",
+      "dosage": "10 mg orally at night (prescribed, not yet dispensed)",
+      "start": "2026-10-01",
+      "status": "active",
+      "kind": "request",
+      "dose": {
+        "value": 10,
+        "unit": "mg"
+      },
+      "route": {
+        "edqm": "20053000",
+        "display": "Oral use"
+      },
+      "timing": {
+        "frequency": 1,
+        "period": 1,
+        "periodUnit": "d"
+      },
+      "fhir_dosage": {
+        "timing": {
+          "repeat": {
+            "frequency": 1,
+            "period": 1,
+            "periodUnit": "d",
+            "when": [
+              "HS"
+            ]
+          }
+        }
+      }
+    }
   ],
   "immunizations": [],
   "results": []

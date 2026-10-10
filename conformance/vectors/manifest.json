@@ -1,0 +1,408 @@
+{
+  "profile": "urn:oid:2.25.11064312502901710892401295388462879468",
+  "profileVersion": "0.4.0",
+  "generator": "scdpoc 0.5.0",
+  "fixture": "amara-okafor",
+  "synthetic": true,
+  "note": "I-03 (sIPS format code on the envelope DocumentEntry) is a registry-level vector exercised by live scenario L-03 against a running registry.",
+  "vectors": {
+    "V-01": {
+      "description": "None: valid preserved snapshot",
+      "mutation": "None: valid preserved snapshot",
+      "classes": [
+        "Envelope"
+      ],
+      "options": [],
+      "valid": true,
+      "mustFail": [],
+      "why": "-",
+      "expected": {},
+      "envelopeSha256": "b359c1b6acc237568efb81f1a0b071f5e8d06638e3d88988a0102b5c52181971",
+      "mustPass": [
+        "ENV-11",
+        "SRC-03",
+        "SRC-05",
+        "PROV-01",
+        "PROV-03",
+        "PROV-04",
+        "PROV-05",
+        "PROV-06",
+        "REN-02",
+        "REN-03",
+        "REN-05",
+        "REN-07.a",
+        "REN-07.b",
+        "REN-08",
+        "REN-10",
+        "REN-11",
+        "REN-12",
+        "REN-14",
+        "ENV-02",
+        "ENV-03.a",
+        "ENV-03.b",
+        "ENV-04.a",
+        "ENV-04.b",
+        "ENV-05",
+        "ENV-06.a",
+        "ENV-06.b",
+        "ENV-07",
+        "ENV-09",
+        "ENV-10",
+        "IPS-01",
+        "IPS-03",
+        "IPS-04",
+        "IPS-05",
+        "IPS-06"
+      ],
+      "mustPassWithValidators": [
+        "ENV-01",
+        "SRC-01"
+      ]
+    },
+    "V-02": {
+      "description": "None: valid attested issuance with evidence of the attestation action (option AI)",
+      "mutation": "None: valid attested issuance with evidence of the attestation action (option AI)",
+      "classes": [
+        "Envelope"
+      ],
+      "options": [
+        "AI"
+      ],
+      "valid": true,
+      "mustFail": [],
+      "why": "-",
+      "expected": {},
+      "envelopeSha256": "b42e5eb5f2b99340f145d6daf3671991f7fc292f30ed25b5ce00ce086b4ada83",
+      "mustPass": [
+        "ENV-11",
+        "SRC-03",
+        "SRC-05",
+        "PROV-01",
+        "PROV-03",
+        "PROV-04",
+        "PROV-05",
+        "PROV-06",
+        "REN-02",
+        "REN-03",
+        "REN-05",
+        "REN-07.a",
+        "REN-07.b",
+        "REN-08",
+        "REN-10",
+        "REN-11",
+        "REN-12",
+        "REN-14",
+        "ENV-02",
+        "ENV-03.a",
+        "ENV-03.b",
+        "ENV-04.a",
+        "ENV-04.b",
+        "ENV-05",
+        "ENV-06.a",
+        "ENV-06.b",
+        "ENV-07",
+        "ENV-09",
+        "ENV-10",
+        "IPS-01",
+        "IPS-03",
+        "IPS-04",
+        "IPS-05",
+        "IPS-06",
+        "PROV-02.a",
+        "PROV-02.b",
+        "IPS-07"
+      ],
+      "mustPassWithValidators": [
+        "ENV-01",
+        "SRC-01"
+      ]
+    },
+    "I-01": {
+      "description": "Embedded IPS altered (dosage '5 mg orally once daily' -> '10 x 5 mg orally once daily'); visible pages unchanged; pages, projection and issuance record unchanged",
+      "mutation": "Embedded IPS altered (dosage '5 mg orally once daily' -> '10 x 5 mg orally once daily'); visible pages unchanged; pages, projection and issuance record unchanged",
+      "classes": [
+        "Envelope",
+        "Issuer"
+      ],
+      "options": [],
+      "valid": false,
+      "mustFail": [
+        "ENV-05",
+        "REN-02",
+        "XCH-02"
+      ],
+      "why": "The embedded octets no longer match the recorded digest (ENV-05) or the projection (XCH-02), and the pages no longer show the value the embedded source now carries (REN-02).",
+      "expected": {},
+      "envelopeSha256": "912bef1af33ae7667cdaf7fb5d6cc6fa5a0eb1db03dbf56fe7ecaea8b6a4aba1"
+    },
+    "I-02": {
+      "description": "AFRelationship of the embedded IPS set to /Data",
+      "mutation": "AFRelationship of the embedded IPS set to /Data",
+      "classes": [
+        "Envelope"
+      ],
+      "options": [],
+      "valid": false,
+      "mustFail": [
+        "ENV-02",
+        "ENV-06.a"
+      ],
+      "why": "No associated file has relationship Source.",
+      "expected": {},
+      "envelopeSha256": "6bc8bb746395567707e939efa449038f71d014207a4092ef56abe7ba841ed003"
+    },
+    "I-04": {
+      "description": "One medication entry omitted from the pages",
+      "mutation": "One medication entry omitted from the pages",
+      "classes": [
+        "Envelope"
+      ],
+      "options": [],
+      "valid": false,
+      "mustFail": [
+        "REN-02"
+      ],
+      "why": "The omitted entry's required elements are not visible.",
+      "expected": {},
+      "envelopeSha256": "38b7a640ecb15e14315d3458d8d12ccd89b8d4b8f7e1b1f49ceac3e780706f4d"
+    },
+    "I-05": {
+      "description": "Second associated file with relationship /Source",
+      "mutation": "Second associated file with relationship /Source",
+      "classes": [
+        "Envelope"
+      ],
+      "options": [],
+      "valid": false,
+      "mustFail": [
+        "ENV-06.a"
+      ],
+      "why": "Two files have relationship Source.",
+      "expected": {},
+      "envelopeSha256": "157901a2a71d101b37c99cbc004df15e61f64f3aeeae268d18e77feb53d68a70"
+    },
+    "I-06": {
+      "description": "Text set in a non-embedded standard font (Helvetica)",
+      "mutation": "Text set in a non-embedded standard font (Helvetica)",
+      "classes": [
+        "Envelope"
+      ],
+      "options": [],
+      "valid": false,
+      "mustFail": [
+        "ENV-01"
+      ],
+      "why": "PDF/A-3 requires every font used for rendering to be embedded. ENV-10 is not expected: a standard font with a standard encoding has a Unicode mapping.",
+      "expected": {},
+      "envelopeSha256": "1e0d7ff56a417e0aa96ba7354b74440fbb4576aa8bab7d4cec3f4251365f3b30"
+    },
+    "I-07": {
+      "description": "Incremental update appended after issuance",
+      "mutation": "Incremental update appended after issuance",
+      "classes": [
+        "Envelope"
+      ],
+      "options": [],
+      "valid": false,
+      "mustFail": [
+        "ENV-11"
+      ],
+      "why": "The file differs from the issued file.",
+      "expected": {},
+      "envelopeSha256": "f0e1ae12f78846de12499c85e18973119c39e7844d0bea212c31c35e9ad88855"
+    },
+    "I-08": {
+      "description": "Bundle.type changed to collection (record and envelope consistent)",
+      "mutation": "Bundle.type changed to collection (record and envelope consistent)",
+      "classes": [
+        "Envelope"
+      ],
+      "options": [],
+      "valid": false,
+      "mustFail": [
+        "SRC-01"
+      ],
+      "why": "An IPS Bundle has type document; the structural pre-flight fails before any validator runs.",
+      "expected": {},
+      "envelopeSha256": "56097c91772b71d82867d822b4de845da96dfaa464653bd49bf26ae93429a26b"
+    },
+    "I-09": {
+      "description": "Projection re-serialised with different white space",
+      "mutation": "Projection re-serialised with different white space",
+      "classes": [
+        "Envelope",
+        "Issuer"
+      ],
+      "options": [],
+      "valid": false,
+      "mustFail": [
+        "XCH-02",
+        "SRC-02"
+      ],
+      "why": "The exchanged octets differ from the embedded ones.",
+      "expected": {},
+      "envelopeSha256": "b359c1b6acc237568efb81f1a0b071f5e8d06638e3d88988a0102b5c52181971"
+    },
+    "I-10": {
+      "description": "Narrative-only section (plan of care) omitted from the pages",
+      "mutation": "Narrative-only section (plan of care) omitted from the pages",
+      "classes": [
+        "Envelope"
+      ],
+      "options": [],
+      "valid": false,
+      "mustFail": [
+        "REN-02",
+        "REN-12"
+      ],
+      "why": "The section title and its narrative are required and absent.",
+      "expected": {},
+      "envelopeSha256": "01671afbf183aebb5854f02b7a3e3f3e51b3e138dde40515c4f6df89e5257d01"
+    },
+    "I-11": {
+      "description": "Dose on the pages differs from the source (dose 10 mg shown, 5 mg in the IPS)",
+      "mutation": "Dose on the pages differs from the source (dose 10 mg shown, 5 mg in the IPS)",
+      "classes": [
+        "Envelope"
+      ],
+      "options": [],
+      "valid": false,
+      "mustFail": [
+        "REN-10"
+      ],
+      "why": "The entry is shown but its dose is not the canonical form of the source value.",
+      "expected": {},
+      "envelopeSha256": "661503b32dbaa1cae64c02bc3f99a5581e693443b781d9f1655af0ad0a55c306"
+    },
+    "I-12": {
+      "description": "Issuance record claims attested issuance without attestation evidence",
+      "mutation": "Issuance record claims attested issuance without attestation evidence",
+      "classes": [
+        "Envelope"
+      ],
+      "options": [],
+      "valid": false,
+      "mustFail": [
+        "PROV-04"
+      ],
+      "why": "Attestation is claimed and no evidence exists; with option AI the evidence obligation fails.",
+      "expected": {},
+      "envelopeSha256": "b359c1b6acc237568efb81f1a0b071f5e8d06638e3d88988a0102b5c52181971",
+      "mustFailWithOptions": {
+        "AI": [
+          "PROV-02.a"
+        ]
+      }
+    },
+    "I-13": {
+      "description": "Legal attester in the source with no attestation evidence (the 0.2.0 behaviour)",
+      "mutation": "Legal attester in the source with no attestation evidence (the 0.2.0 behaviour)",
+      "classes": [
+        "Envelope"
+      ],
+      "options": [],
+      "valid": false,
+      "mustFail": [
+        "PROV-04",
+        "IPS-03"
+      ],
+      "why": "The source claims attestation for a preserved snapshot.",
+      "expected": {},
+      "envelopeSha256": "ed388f2f62889785abdeaa9eaabbf83e13992f05f709fa2ec33427170fc92999"
+    },
+    "I-14": {
+      "description": "A problem code shown in the medication section",
+      "mutation": "A problem code shown in the medication section",
+      "classes": [
+        "Envelope"
+      ],
+      "options": [],
+      "valid": false,
+      "mustFail": [
+        "REN-08"
+      ],
+      "why": "The code is carried neither by that section's entries nor by its source narrative.",
+      "expected": {},
+      "envelopeSha256": "48d938a3dce99d9f974b08db83dd3e2936e4c165dc93874baec843e97843bb94"
+    },
+    "I-15": {
+      "description": "Composition.status preliminary",
+      "mutation": "Composition.status preliminary",
+      "classes": [
+        "Envelope"
+      ],
+      "options": [],
+      "valid": false,
+      "mustFail": [
+        "IPS-04"
+      ],
+      "why": "An issuance is final, or amended for a correction.",
+      "expected": {},
+      "envelopeSha256": "2ae53790ae1bb1ebb5738631dafde93718b772f0c4def988fb6c5fae46893c59"
+    },
+    "I-16": {
+      "description": "Nested section; the nested entry's dosage timing omitted from the pages",
+      "mutation": "Nested section; the nested entry's dosage timing omitted from the pages",
+      "classes": [
+        "Envelope"
+      ],
+      "options": [],
+      "valid": false,
+      "mustFail": [
+        "REN-02",
+        "REN-12"
+      ],
+      "why": "A required element of an entry in a nested section is not visible.",
+      "expected": {},
+      "envelopeSha256": "c353d479978e65e80ca10d0aee85ebdbe1d4e59d371d421dec46f76b4cb5b87a"
+    },
+    "I-17": {
+      "description": "ToUnicode maps removed from the embedded fonts",
+      "mutation": "ToUnicode maps removed from the embedded fonts",
+      "classes": [
+        "Envelope"
+      ],
+      "options": [],
+      "valid": false,
+      "mustFail": [
+        "ENV-10"
+      ],
+      "why": "The embedded subset fonts use an identity encoding, so without ToUnicode the page text has no Unicode mapping. ENV-10 is advisory: the failure is reported as a warning. REN-02 may also fail, because the Checker reads the pages through that mapping.",
+      "expected": {},
+      "envelopeSha256": "5b1e54ec6385c44f07898eb12b94bc172b7830563d5f36f802575fb07b11b3d6"
+    },
+    "I-18": {
+      "description": "Attested issuance whose dose was changed after attestation; evidence unchanged; pages rendered from the changed source (option AI)",
+      "mutation": "Attested issuance whose dose was changed after attestation; evidence unchanged; pages rendered from the changed source (option AI)",
+      "classes": [
+        "Envelope"
+      ],
+      "options": [
+        "AI"
+      ],
+      "valid": false,
+      "mustFail": [
+        "PROV-02.b",
+        "IPS-07"
+      ],
+      "why": "The attested content digest of the issued source differs from the digest that was attested.",
+      "expected": {},
+      "envelopeSha256": "fb40acd3c97a097bb10118ebea2eb86c5ac095a585b9715262a95eadd54eebf4"
+    },
+    "I-19": {
+      "description": "Boundary: a Condition stage (disposition N) populated and shown; no inspection declared",
+      "mutation": "Boundary: a Condition stage (disposition N) populated and shown; no inspection declared",
+      "classes": [
+        "Envelope"
+      ],
+      "options": [],
+      "valid": false,
+      "mustFail": [],
+      "why": "The element has no canonical form, so automated checking cannot establish its fidelity: REN-14 is not-tested, and no obligation fails.",
+      "expected": {
+        "REN-14": "not-tested"
+      },
+      "envelopeSha256": "635d500729e97abc0e79618af7c181cac89ff80512f92806f26f232a32413dea"
+    }
+  }
+}

@@ -7,9 +7,8 @@ cd "$(dirname "$0")/.."
 IG_VERSION=$(python -c "import yaml;print(yaml.safe_load(open('config/ips-package.yml'))['ips']['version'])")
 JAR="${SCDPOC_HL7_VALIDATOR_JAR:-.cache/validator_cli.jar}"
 if [ ! -f "$JAR" ]; then
-  mkdir -p "$(dirname "$JAR")"
-  echo "Downloading HL7 FHIR validator to $JAR"
-  curl -fsSL -o "$JAR" https://github.com/hapifhir/org.hl7.fhir.core/releases/latest/download/validator_cli.jar
+  echo "Installing the pinned HL7 FHIR validator to $JAR"
+  scripts/ci/install-hl7-validator.sh "$JAR"
 fi
 mkdir -p build/evidence
 status=0

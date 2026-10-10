@@ -18,6 +18,7 @@ NS = {
 ITI41 = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b"
 ITI18 = "urn:ihe:iti:2007:RegistryStoredQuery"
 ITI43 = "urn:ihe:iti:2007:RetrieveDocumentSet"
+ITI57 = "urn:ihe:iti:2010:UpdateDocumentSet"          # XDS Metadata Update: Update Document Set
 
 # Object and classification identifiers
 DOC_ENTRY_STABLE = "urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1"
@@ -47,6 +48,8 @@ CODE_SCHEMES = {
 ASSOC_HAS_MEMBER = "urn:oasis:names:tc:ebxml-regrep:AssociationType:HasMember"
 ASSOC_RPLC = "urn:ihe:iti:2007:AssociationType:RPLC"
 ASSOC_XFRM = "urn:ihe:iti:2007:AssociationType:XFRM"
+ASSOC_APND = "urn:ihe:iti:2007:AssociationType:APND"
+ASSOC_UPDATE_AVAILABILITY = "urn:ihe:iti:2010:AssociationType:UpdateAvailabilityStatus"
 
 STATUS_APPROVED = "urn:oasis:names:tc:ebxml-regrep:StatusType:Approved"
 STATUS_DEPRECATED = "urn:oasis:names:tc:ebxml-regrep:StatusType:Deprecated"
@@ -89,6 +92,7 @@ class DocumentEntry:
     repository_unique_id: str = ""
     status: str = STATUS_APPROVED
     comments: str = ""
+    legal_authenticator: str = ""
 
 
 @dataclass

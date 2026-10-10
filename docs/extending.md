@@ -6,12 +6,19 @@ The demonstrator is designed so an EHDS-facing service can adopt the *pattern* -
 
 ### 1. Source data → IPS (`ips/composer.py`)
 
-`compose_ips(source, settings, *, document_id, issued, series_id, version, replaces_document_urn) -> ComposedDocument`
+`compose_ips(source, settings, *, document_id, issued, series_id, version, replaces_document_urn, attestation, status) -> ComposedDocument`
 
 Replace the fixture-shaped `source` mapping with your clinical data extract (or an existing IPS generator). Keep:
 - serialising once (`serialise`) and never regenerating issued bytes;
 - `Composition.relatesTo` (`replaces`) for new versions;
-- section narratives generated from `ips/view.py`.
+- section narratives generated from `ips/view.py`;
+- a Device author and **no attester** unless a real attestation action has taken place. Attest with
+  `ips/attestation.py`: the attester reviews a validated draft, the attestation is recorded against the draft's
+  attested content digest (`attested_content_digest`), and `add_attestation` produces the final IPS - the draft plus
+  the attestation and nothing else. Keep the evidence (who, when, method, statement, attested content digest) in the
+  issuance record, and refuse to publish content whose digest differs (profile PROV-02, PROV-04, PROV-08, IPS-07).
+- `Composition.date` as the clinical content time, distinct from `Bundle.timestamp` (issuance) and `attester.time`
+  (profile PROV-09 and the time mapping).
 
 Remove `safety.load_fixture` only inside a governed environment with real information-governance controls.
 
@@ -33,11 +40,29 @@ Point `SCDPOC_XDS_ENDPOINT_BASE` at production XDS infrastructure: the demo's Do
 
 To persist metadata in PostgreSQL instead of SQLite, implement the `RegistryStore` and `ObjectStore` methods in `xds/store.py`.
 
-### 6. EHDS export (`ehds/adapter.py`)
+### 6. Lifecycle, preservation events and fixity (`lifecycle.py`, `preservation.py`)
+
+Keep the state table: a correction is a new issuance with status `amended`; a withdrawal is an ITI-57
+UpdateAvailabilityStatus of both entries. Replace the notification-required event with your notification process.
+For the Protected Preservation option, hold the event-chain anchor (`preservation/anchor.json`) with an independent
+party, or seal the log, and schedule `scdpoc fixity` (or your archive's fixity service) and record its results as
+events.
+
+### 7. Conformance claims (`conformance/`)
+
+Copy `conformance/claim.example.json`, state your classes, options, the actor bindings you implement for each class
+(only their transactions are required of you), dependency versions with their statuses (`exact`,
+`permitted-alternative`; an `unsupported-deviation` is never eligible for a conformant verdict), declarations and
+declared inspections (by obligation id, for example `REN-14` or `PROV-02.c`), and run
+`scdpoc check` with your artefacts, your live-scenario results and the vector results. Replace the live-scenario
+driver (`conformance_kit.py`) with one that drives your system through the same scenario definitions; key its results
+by obligation id (`REN-04.a`, not `REN-04`), or the Checker rejects them.
+
+### 8. EHDS export (`ehds/adapter.py`)
 
 Implement `ExportAdapter.export(ips_bytes) -> ExportResult` for the adopted EEHRxF specification and your NCPeH's requirements (`MyHealthEuAdapter` marks the spot). Keep the readiness register under change control and update it when implementing acts or national rules change.
 
-### 7. Cross-border (`crossborder/`)
+### 9. Cross-border (`crossborder/`)
 
 - The responding gateway's release policy is configuration (`config/crossborder/communities.yml`). Keep the envelope out of the exposed format codes.
 - Replace `find_match` with your master patient index and matching rules; keep "disclose nothing on ambiguity".

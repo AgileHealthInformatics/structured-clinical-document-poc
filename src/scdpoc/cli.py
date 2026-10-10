@@ -65,6 +65,43 @@ def _validate(args) -> None:
     sys.exit(0 if rep.publishable else 1)
 
 
+def _check(args) -> None:
+    from .checker import main as check_main
+    sys.exit(check_main(args))
+
+
+def _check_vectors(args) -> None:
+    from .conformance_kit import check_vectors, write
+    out = check_vectors(Path(args.vectors), reports_dir=Path(args.reports) if args.reports else None)
+    write(out, args.out)
+    sys.exit(0 if all(r["outcome"] == "pass" for r in out["results"].values()) else 1)
+
+
+def _live_check(args) -> None:
+    import os
+
+    from .conformance_kit import live_check, write
+    kw = {}
+    for env, key in (("SCDPOC_REQUIRE_HL7_VALIDATOR", "require_hl7_validator"),
+                     ("SCDPOC_REQUIRE_VERAPDF", "require_verapdf")):
+        if os.environ.get(env):
+            kw[key] = os.environ[env].lower() in ("1", "true", "yes")
+    out = live_check(args.only, kw)
+    write(out, args.out)
+    sys.exit(0 if all(r["outcome"] == "pass" for r in out["results"].values()) else 1)
+
+
+def _fixity(args) -> None:
+    from .preservation import main as fixity_main
+    sys.exit(fixity_main(args))
+
+
+def _build_vectors(args) -> None:
+    from .vectors import build
+    m = build(Path(args.out))
+    print(f"wrote {len(m['vectors'])} vectors to {args.out}")
+
+
 def main() -> None:
     p = argparse.ArgumentParser(prog="scdpoc", description="EHDS Structured Clinical Document PoC (synthetic only)")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -78,6 +115,33 @@ def main() -> None:
     v = sub.add_parser("validate", help="run IPS validation on a JSON file")
     v.add_argument("file")
     v.set_defaults(fn=_validate)
+    c = sub.add_parser("check", help="Checker: evaluate a claim (classes, options) against the profile rules")
+    c.add_argument("envelope", nargs="?", help="envelope PDF (artefact method)")
+    c.add_argument("--projection")
+    c.add_argument("--record", help="issuance record JSON")
+    c.add_argument("--class", dest="cls", action="append", help="conformance class claimed (repeatable); "
+                                                                 "default: from --claim, else Envelope")
+    c.add_argument("--option", action="append", help="option claimed: AI, PP, MHD, OD (repeatable)")
+    c.add_argument("--claim", help="conformance claim JSON (claim and inspection methods)")
+    c.add_argument("--evidence", action="append", help="live-check or check-vectors result file (repeatable)")
+    c.add_argument("--out")
+    c.set_defaults(fn=_check)
+    cv = sub.add_parser("check-vectors", help="run the Checker over the conformance vectors (method: vectors)")
+    cv.add_argument("--vectors", default="conformance/vectors")
+    cv.add_argument("--out")
+    cv.add_argument("--reports", help="directory for one Checker report per vector")
+    cv.set_defaults(fn=_check_vectors)
+    lc = sub.add_parser("live-check", help="run live scenarios L-01..L-12 against a fresh in-process instance")
+    lc.add_argument("--only", action="append", help="scenario id, e.g. L-06 (repeatable)")
+    lc.add_argument("--out")
+    lc.set_defaults(fn=_live_check)
+    fx = sub.add_parser("fixity", help="independent fixity check of issued artefacts and the preservation log")
+    fx.add_argument("--data-dir", help="demonstrator data directory (default: SCDPOC_DATA_DIR or ./data)")
+    fx.add_argument("--out")
+    fx.set_defaults(fn=_fixity)
+    bv = sub.add_parser("build-vectors", help="regenerate deterministic conformance test vectors")
+    bv.add_argument("--out", default="conformance/vectors")
+    bv.set_defaults(fn=_build_vectors)
     args = p.parse_args()
     args.fn(args)
 

@@ -112,7 +112,7 @@ items:
     requirement: Preservation container is not the cross-border protocol
     status: simulated
     note: >-
-      Jurisdiction A's gateway policy releases only current IPS documents (format code urn:ihe:pcc:ips:2020);
+      Jurisdiction A's gateway policy releases only current IPS documents (sIPS format code, the IPS Bundle profile canonical);
       requests for the PDF/A envelope are refused.
   - id: TERM-05
     area: Terminology
