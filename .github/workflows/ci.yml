@@ -39,11 +39,7 @@ jobs:
           java-version: "21"
       - run: pip install -r requirements.lock -e ".[dev]"
       - name: Install HL7 FHIR validator
-        run: |
-          mkdir -p .cache
-          curl -fsSL -o .cache/validator_cli.jar \
-            https://github.com/hapifhir/org.hl7.fhir.core/releases/latest/download/validator_cli.jar
-          java -jar .cache/validator_cli.jar -help | head -3 || true
+        run: bash scripts/ci/install-hl7-validator.sh .cache/validator_cli.jar
       - name: Install veraPDF CLI
         run: scripts/ci/install-verapdf.sh "$HOME/verapdf"
       - name: Build deterministic fixture artefacts
