@@ -17,6 +17,7 @@ from .model import (
     ITI18,
     ITI41,
     ITI43,
+    ITI57,
     NS,
     RESPONSE_SUCCESS,
     SQ_FIND_DOCUMENTS,
@@ -87,6 +88,16 @@ class XdsClient:
         _, msg = self._call(self.repository_url, body, ctype)
         resp = msg.body
         return Exchange("ITI-41", _pretty(env), _pretty(resp), resp.get("status", ""), _errors(resp))
+
+    # ITI-57 ----------------------------------------------------------------
+    def update_document_set(self, sub: Submission) -> Exchange:
+        """XDS Metadata Update (Document Administrator): SubmissionSet plus UpdateAvailabilityStatus
+        associations, sent to the registry."""
+        req = build_submit_objects_request(sub)
+        env = envelope(ITI57, req, to=self.registry_url)
+        _, msg = self._call(self.registry_url, to_bytes(env), "application/soap+xml; charset=UTF-8")
+        resp = msg.body
+        return Exchange("ITI-57", _pretty(env), _pretty(resp), resp.get("status", ""), _errors(resp))
 
     # ITI-18 ----------------------------------------------------------------
     def _stored_query(self, query_id: str, params: dict[str, list[str]], leaf: bool = True):

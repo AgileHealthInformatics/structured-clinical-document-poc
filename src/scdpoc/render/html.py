@@ -11,7 +11,7 @@ from html import escape
 from ..ips.view import SummaryView
 from .labels import ENGLISH, Labels
 
-RENDERER_VERSION = "scdpoc-render-1"
+RENDERER_VERSION = "scdpoc-render-4"
 
 _CSS = """
 body{font-family:Georgia,'Times New Roman',serif;color:#1c1c1c;max-width:860px;margin:2rem auto;padding:0 1rem;line-height:1.45}
@@ -33,22 +33,29 @@ def render_html(view: SummaryView, labels: Labels = ENGLISH,
     rows = [
         (labels.patient, view.patient_name), (labels.identifier, view.patient_id),
         (labels.dob, view.birth_date), (labels.sex, view.gender),
-        (labels.issued, view.issued), (labels.author, view.author), (labels.custodian, view.custodian),
-        (labels.document, view.document_id),
+        (labels.content_time, view.content_time), (labels.issued, view.issued), (labels.author, view.author), (labels.custodian, view.custodian),
+        (labels.document, view.document_id), (labels.status, view.status), (labels.assurance, view.assurance),
     ]
+    if view.attester:
+        rows.append((labels.attester, view.attester))
     if view.replaces:
         rows.append((labels.replaces, view.replaces))
     rows += extra_meta or []
     meta = "".join(f"<dt>{escape(k)}</dt><dd>{escape(v)}</dd>" for k, v in rows)
-    sections = []
-    for s in view.sections:
+    def render(s, level: int) -> str:
         if s.empty_text:
             body = f'<p class="empty">{escape(s.empty_text)}</p>'
-        else:
+        elif s.rows:
             head = "".join(f"<th>{escape(c)}</th>" for c in s.columns)
             trs = "".join("<tr>" + "".join(f"<td>{escape(v)}</td>" for v in r) + "</tr>" for r in s.rows)
             body = f"<table><thead><tr>{head}</tr></thead><tbody>{trs}</tbody></table>"
-        sections.append(f"<section><h2>{escape(s.title)}</h2>{body}</section>")
+        else:
+            body = ""
+        h = f"h{min(level, 6)}"
+        subs = "".join(render(c, level + 1) for c in s.subsections)
+        return f"<section><{h}>{escape(s.title)}</{h}>{body}{subs}</section>"
+
+    sections = [render(s, 2) for s in view.sections]
     footer = labels.rendered_by.format(renderer=RENDERER_VERSION)
     return (f'<!doctype html><html lang="{escape(labels.lang)}"><head><meta charset="utf-8">'
             f"<title>{escape(view.title)} - {escape(view.patient_name)}</title><style>{_CSS}</style></head>"

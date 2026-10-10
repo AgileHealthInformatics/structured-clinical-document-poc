@@ -1,0 +1,133 @@
+{
+  "profile": "urn:oid:2.25.11064312502901710892401295388462879468",
+  "profileVersion": "0.4.0",
+  "implementation": "EHDS Structured Clinical Document PoC (demonstrator) 0.5.0",
+  "classes": [
+    "Issuer",
+    "Envelope",
+    "Publisher",
+    "Responder",
+    "Responding Gateway",
+    "Receiver",
+    "Repository"
+  ],
+  "options": [
+    "AI",
+    "MHD"
+  ],
+  "actorBindings": {
+    "Publisher": [
+      "XDS.b Document Source",
+      "XDS Metadata Update Document Administrator"
+    ],
+    "Responder": [
+      "XDS.b Document Repository",
+      "XDS.b Document Registry",
+      "MHD Document Responder"
+    ],
+    "Responding Gateway": [
+      "XCPD Responding Gateway",
+      "XCA Responding Gateway"
+    ],
+    "Receiver": [
+      "XCPD and XCA Initiating Gateway"
+    ]
+  },
+  "bindings": {
+    "content": "HL7 FHIR IPS 2.0.1 on FHIR 4.0.1 (hl7.fhir.uv.ips#2.0.1)",
+    "exchange": "IHE ITI TF Rev 20.2 (XDS.b, XCA, XCPD); XDS Metadata Update Rev 1.14 (ITI-57); MHD 4.2.4; sIPS 1.0.0"
+  },
+  "dependencies": {
+    "fhir": {
+      "version": "4.0.1",
+      "status": "exact"
+    },
+    "ips": {
+      "version": "2.0.1",
+      "status": "exact"
+    },
+    "iti-tf": {
+      "version": "Revision 20.2",
+      "status": "exact"
+    },
+    "xds-mu": {
+      "version": "Revision 1.14",
+      "status": "exact"
+    },
+    "mhd": {
+      "version": "4.2.4",
+      "status": "exact"
+    },
+    "sips": {
+      "version": "1.0.0",
+      "status": "exact"
+    },
+    "formatcode": {
+      "version": "1.5.0",
+      "status": "exact"
+    },
+    "pdfa": {
+      "version": "ISO 19005-3:2012",
+      "status": "exact"
+    },
+    "sha": {
+      "version": "FIPS 180-4",
+      "status": "exact"
+    },
+    "hl7-validator": {
+      "version": "7.0.1",
+      "status": "exact"
+    },
+    "verapdf": {
+      "version": "1.30.3",
+      "status": "exact"
+    }
+  },
+  "exceptions": [],
+  "validators": {
+    "hl7-validator": "7.0.1",
+    "verapdf": "1.30.3"
+  },
+  "transactions": [
+    "ITI-41",
+    "ITI-57",
+    "ITI-18",
+    "ITI-43",
+    "ITI-67",
+    "ITI-68",
+    "ITI-55",
+    "ITI-38",
+    "ITI-39"
+  ],
+  "statement": "Self-assessment of a demonstrator against the IPS Preservation Envelope Profile 0.4.0, using synthetic data only. It is not a claim of conformance with any other specification, and the Checker is from the same project, so the result is not independent assurance.",
+  "declarations": {
+    "PRES-04": {
+      "party": "The operator of each demonstrator instance",
+      "frequency": "On demand (scdpoc fixity); no schedule",
+      "redundancy": "None: single local write-once volume",
+      "recovery": "None",
+      "migration": "None"
+    }
+  },
+  "declarationsNotProvided": {
+    "SEC-01": "No authorisation model: the demonstrator has no users and is not for use with real data.",
+    "SEC-02": "Cross-border identification, authentication, consent, audit and lawful basis are out of scope of a demonstrator on synthetic data.",
+    "SEC-03": "No clinical risk management: the demonstrator is not for clinical use.",
+    "PRES-05": "Option PP is not claimed; the event chain head is held locally."
+  },
+  "inspections": {
+    "PROV-02.c": {
+      "result": "pass",
+      "inspector": "Project maintainers (self-declared, not independent)",
+      "date": "2026-10-09",
+      "method": "Code review: an attested issuance is produced only by the explicit attestation action (DemoService.attest); composition, validation, packaging and registration never add Composition.attester or legalAuthenticator."
+    }
+  },
+  "evidenceManifest": {
+    "release": "scdpoc 0.5.0",
+    "ruleCatalogueSha256": "see conformance/rules.json",
+    "vectors": "conformance/vectors/manifest.json",
+    "reports": "produced by CI (build/evidence)",
+    "note": "The CI evidence manifest (build/evidence/manifest.json) binds the reports to a commit."
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "profile": "urn:oid:2.25.11064312502901710892401295388462879468",
+  "profileVersion": "0.4.0",
+  "implementation": "<your product and version>",
+  "classes": [
+    "Envelope"
+  ],
+  "options": [],
+  "actorBindings": {},
+  "bindings": {
+    "content": "HL7 FHIR IPS 2.0.1 on FHIR 4.0.1 (hl7.fhir.uv.ips#2.0.1)",
+    "exchange": "IHE ITI TF Rev 20.2 (XDS.b, XCA, XCPD); XDS Metadata Update Rev 1.14 (ITI-57); MHD 4.2.4; sIPS 1.0.0"
+  },
+  "dependencies": {
+    "fhir": {
+      "version": "4.0.1",
+      "status": "exact"
+    },
+    "ips": {
+      "version": "2.0.1",
+      "status": "exact"
+    },
+    "iti-tf": {
+      "version": "Revision 20.2",
+      "status": "exact"
+    },
+    "xds-mu": {
+      "version": "Revision 1.14",
+      "status": "exact"
+    },
+    "mhd": {
+      "version": "4.2.4",
+      "status": "exact"
+    },
+    "sips": {
+      "version": "1.0.0",
+      "status": "exact"
+    },
+    "formatcode": {
+      "version": "1.5.0",
+      "status": "exact"
+    },
+    "pdfa": {
+      "version": "ISO 19005-3:2012",
+      "status": "exact"
+    },
+    "sha": {
+      "version": "FIPS 180-4",
+      "status": "exact"
+    },
+    "hl7-validator": {
+      "version": "7.0.1",
+      "status": "exact"
+    },
+    "verapdf": {
+      "version": "1.30.3",
+      "status": "exact"
+    }
+  },
+  "exceptions": [],
+  "validators": {
+    "hl7-validator": "7.0.1",
+    "verapdf": "1.30.3"
+  },
+  "transactions": [],
+  "statement": "<scope of the claim; do not claim conformance with EHDS, MyHealth@EU, HL7 or IHE specifications (CON-03)>",
+  "declarations": {
+    "SEC-01": {
+      "authorisation": "<who may issue, attest, replace, withdraw, read>",
+      "inventoryShown": "<where the inventory is shown before issuance>"
+    },
+    "SEC-02": {
+      "identification": "<…>",
+      "authentication": "<…>",
+      "consent": "<…>",
+      "audit": "<…>",
+      "lawfulBasis": "<…>"
+    },
+    "SEC-03": {
+      "clinicalRiskManagement": "<process and reference>"
+    }
+  },
+  "inspections": {
+    "REN-06": {
+      "result": "pass",
+      "inspector": "<name, role>",
+      "date": "<YYYY-MM-DD>",
+      "method": "<how the narratives were inspected>"
+    }
+  },
+  "evidenceManifest": {
+    "release": "<release identifier>",
+    "ruleCatalogueSha256": "<sha256 of rules.json>",
+    "vectors": "<vector set and digests>",
+    "reports": [
+      "<checker reports>"
+    ]
+  },
+  "actorBindingsNote": "Per class claimed, the bindings implemented (section 4.3). The Envelope class has none. Example for a Receiver that only uses MHD: {\"Receiver\": [\"MHD Document Consumer\"]} with transactions ITI-67 and ITI-68; it is not required to implement XCA."
+}

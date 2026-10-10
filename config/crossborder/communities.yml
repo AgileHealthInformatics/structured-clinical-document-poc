@@ -22,5 +22,5 @@ consumer:                 # Jurisdiction B - where a clinician reads the summary
 # The preservation envelope is never offered across the border: only the
 # computable IPS (the pivot) is. This is the PoC's core claim made enforceable.
 gateway_policy:
-  exposed_format_codes: ["urn:ihe:pcc:ips:2020"]
+  exposed_format_codes: ["http://hl7.org/fhir/uv/ips/StructureDefinition/Bundle-uv-ips"]
   exposed_statuses: ["urn:oasis:names:tc:ebxml-regrep:StatusType:Approved"]

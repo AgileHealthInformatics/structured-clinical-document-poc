@@ -5,37 +5,244 @@
   "patient": {
     "identifier": "SYN-000101",
     "family": "Okafor",
-    "given": ["Amara"],
+    "given": [
+      "Amara"
+    ],
     "gender": "female",
     "birthDate": "1971-03-14",
     "country": "IE"
   },
   "problems": [
-    { "snomed": "38341003", "display": "Hypertensive disorder, systemic arterial", "onset": "2015-06-02", "clinicalStatus": "active" },
-    { "snomed": "44054006", "display": "Diabetes mellitus type 2", "onset": "2019-11-20", "clinicalStatus": "active" }
+    {
+      "snomed": "38341003",
+      "display": "Hypertensive disorder, systemic arterial",
+      "onset": "2015-06-02",
+      "clinicalStatus": "active",
+      "verification": "confirmed",
+      "severity": {
+        "snomed": "6736007",
+        "display": "Moderate severity"
+      }
+    },
+    {
+      "snomed": "44054006",
+      "display": "Diabetes mellitus type 2",
+      "onset": "2019-11-20",
+      "clinicalStatus": "active",
+      "verification": "confirmed",
+      "fhir": {
+        "note": [
+          {
+            "text": "Managed with diet alone until late 2019."
+          }
+        ]
+      }
+    }
   ],
   "allergies": [
-    { "snomed": "764146007", "display": "Penicillin", "criticality": "high", "clinicalStatus": "active",
-      "reaction": { "snomed": "271807003", "display": "Eruption of skin" } }
+    {
+      "snomed": "764146007",
+      "display": "Penicillin",
+      "criticality": "high",
+      "clinicalStatus": "active",
+      "reaction": {
+        "snomed": "271807003",
+        "display": "Eruption of skin",
+        "severity": "moderate"
+      },
+      "verification": "confirmed",
+      "fhir": {
+        "category": [
+          "medication"
+        ],
+        "note": [
+          {
+            "text": "Rash after amoxicillin in childhood."
+          }
+        ]
+      }
+    }
   ],
   "medications": [
-    { "atc": "C09AA05", "display": "ramipril", "dosage": "5 mg orally once daily", "start": "2015-06-10", "status": "active" },
-    { "atc": "A10BA02", "display": "metformin", "dosage": "500 mg orally twice daily with meals", "start": "2019-12-01", "status": "active" }
+    {
+      "atc": "C09AA05",
+      "display": "ramipril",
+      "dosage": "5 mg orally once daily",
+      "start": "2015-06-10",
+      "status": "active",
+      "dose": {
+        "value": 5,
+        "unit": "mg"
+      },
+      "route": {
+        "edqm": "20053000",
+        "display": "Oral use"
+      },
+      "timing": {
+        "frequency": 1,
+        "period": 1,
+        "periodUnit": "d"
+      }
+    },
+    {
+      "atc": "A10BA02",
+      "display": "metformin",
+      "dosage": "500 mg orally twice daily with meals",
+      "start": "2019-12-01",
+      "status": "active",
+      "dose": {
+        "value": 500,
+        "unit": "mg"
+      },
+      "route": {
+        "edqm": "20053000",
+        "display": "Oral use"
+      },
+      "timing": {
+        "frequency": 2,
+        "period": 1,
+        "periodUnit": "d"
+      },
+      "fhir_dosage": {
+        "additionalInstruction": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "311504000",
+                "display": "With or after food"
+              }
+            ]
+          }
+        ],
+        "patientInstruction": "Take with breakfast and the evening meal",
+        "maxDosePerPeriod": {
+          "numerator": {
+            "value": 2000,
+            "unit": "mg",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg"
+          },
+          "denominator": {
+            "value": 1,
+            "unit": "d",
+            "system": "http://unitsofmeasure.org",
+            "code": "d"
+          }
+        }
+      }
+    }
   ],
   "immunizations": [
-    { "atc": "J07BB", "display": "influenza vaccines", "date": "2025-10-14" }
+    {
+      "atc": "J07BB",
+      "display": "influenza vaccines",
+      "date": "2025-10-14",
+      "fhir": {
+        "protocolApplied": [
+          {
+            "doseNumberPositiveInt": 1
+          }
+        ]
+      }
+    }
   ],
   "results": [
-    { "loinc": "4548-4", "display": "Hemoglobin A1c/Hemoglobin.total in Blood", "value": 7.1, "unit": "%", "ucum": "%", "date": "2026-08-18" },
-    { "loinc": "14682-9", "display": "Creatinine [Moles/volume] in Serum or Plasma", "value": 78, "unit": "umol/L", "ucum": "umol/L", "date": "2026-08-18" }
+    {
+      "loinc": "4548-4",
+      "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+      "value": 7.1,
+      "unit": "%",
+      "ucum": "%",
+      "date": "2026-08-18",
+      "interpretation": {
+        "code": "H",
+        "display": "High"
+      },
+      "fhir": {
+        "referenceRange": [
+          {
+            "low": {
+              "value": 4.0,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "high": {
+              "value": 6.0,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "loinc": "14682-9",
+      "display": "Creatinine [Moles/volume] in Serum or Plasma",
+      "value": 78,
+      "unit": "umol/L",
+      "ucum": "umol/L",
+      "date": "2026-08-18",
+      "fhir": {
+        "referenceRange": [
+          {
+            "low": {
+              "value": 45,
+              "unit": "umol/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "umol/L"
+            },
+            "high": {
+              "value": 84,
+              "unit": "umol/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "umol/L"
+            }
+          }
+        ]
+      }
+    }
   ],
   "revision": {
     "note": "Statin started after cardiovascular risk review; repeat HbA1c.",
     "add_medications": [
-      { "atc": "C10AA05", "display": "atorvastatin", "dosage": "20 mg orally at night", "start": "2026-09-22", "status": "active" }
+      {
+        "atc": "C10AA05",
+        "display": "atorvastatin",
+        "dosage": "20 mg orally at night",
+        "start": "2026-09-22",
+        "status": "active",
+        "dose": {
+          "value": 20,
+          "unit": "mg"
+        },
+        "route": {
+          "edqm": "20053000",
+          "display": "Oral use"
+        },
+        "timing": {
+          "frequency": 1,
+          "period": 1,
+          "periodUnit": "d"
+        }
+      }
     ],
     "add_results": [
-      { "loinc": "4548-4", "display": "Hemoglobin A1c/Hemoglobin.total in Blood", "value": 6.8, "unit": "%", "ucum": "%", "date": "2026-09-29" }
+      {
+        "loinc": "4548-4",
+        "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+        "value": 6.8,
+        "unit": "%",
+        "ucum": "%",
+        "date": "2026-09-29",
+        "interpretation": {
+          "code": "H",
+          "display": "High"
+        }
+      }
     ]
-  }
+  },
+  "plan_of_care": "Review blood pressure and HbA1c in three months. Annual diabetic eye screening due in March."
 }

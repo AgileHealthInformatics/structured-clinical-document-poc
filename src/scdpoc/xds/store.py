@@ -120,9 +120,31 @@ class RegistryStore:
                 c.execute("UPDATE document_entry SET status=?, json=? WHERE entry_uuid=?",
                           (de.status, de_to_json(de), uuid_))
 
+    def update_status(self, ss: SubmissionSet, assocs: list[Association], changes: dict[str, str]) -> None:
+        """ITI-57 Update Availability Status: record the SubmissionSet and associations and change the status of
+        the target DocumentEntries, in one transaction (all or nothing)."""
+        with self.db.tx() as c:
+            c.execute("INSERT INTO submission_set VALUES (?,?,?,?)",
+                      (ss.entry_uuid, ss.unique_id, ss.patient_id, json.dumps(asdict(ss))))
+            for a in assocs:
+                c.execute("INSERT INTO association VALUES (?,?,?,?,?)",
+                          (a.entry_uuid, a.type, a.source, a.target, json.dumps(asdict(a))))
+            for uuid_, status in changes.items():
+                row = c.execute("SELECT json FROM document_entry WHERE entry_uuid=?", (uuid_,)).fetchone()
+                de = de_from_json(row[0])
+                de.status = status
+                c.execute("UPDATE document_entry SET status=?, json=? WHERE entry_uuid=?",
+                          (de.status, de_to_json(de), uuid_))
+
     def get(self, entry_uuid: str) -> DocumentEntry | None:
         row = self.db.one("SELECT json FROM document_entry WHERE entry_uuid=?", (entry_uuid,))
         return de_from_json(row[0]) if row else None
+
+    def submission_time(self, entry_uuid: str) -> str | None:
+        """submissionTime of the SubmissionSet that registered this entry (MHD DocumentReference.date)."""
+        row = self.db.one("SELECT s.json FROM document_entry d JOIN submission_set s ON s.entry_uuid = d.submission_set "
+                          "WHERE d.entry_uuid=?", (entry_uuid,))
+        return json.loads(row[0]).get("submission_time") if row else None
 
     def get_by_unique_id(self, unique_id: str) -> DocumentEntry | None:
         row = self.db.one("SELECT json FROM document_entry WHERE unique_id=?", (unique_id,))

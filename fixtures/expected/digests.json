@@ -1,21 +1,22 @@
 {
-  "note": "Deterministic outputs of `scdpoc build-fixtures` (issued 2026-10-07T12:00:00Z, uuid5 document ids). IPS digests are normative regression values; PDF digests depend on ReportLab/pikepdf/qpdf versions and are informative.",
-  "libraries": {
-    "reportlab": "5.0.1",
-    "pikepdf": "10.16.0"
-  },
-  "fixtures": {
-    "amara-okafor": {
-      "ips_sha256": "aaad177bb42d937061db78af6751e1b914a62cfd65caaccdec9e8a0cf80f970f",
-      "pdf_sha256_informative": "f5bd030050e277442db323c4a6c60365e9c558c49a69594af93d812dfb3b27b9"
-    },
-    "ines-duarte": {
-      "ips_sha256": "446388baa59cbcd1709fce5a8380754985e397345601dc3d1b5bc3608c30e767",
-      "pdf_sha256_informative": "2fd71618c1823da078e125a891e5fb06e0533325925c8749df993b9a02fd9ade"
-    },
-    "lukas-brenner": {
-      "ips_sha256": "b9b6d8d367bc757fb00e09956411c8f6e0489502b67f10ce1d29f2650152cf79",
-      "pdf_sha256_informative": "9231caccb99123d8b6ce287a821856d0807e757184515a40a83e97b51e6440ac"
-    }
-  }
+    "note":  "Deterministic outputs of `scdpoc build-fixtures` (issued 2026-10-07T12:00:00Z, uuid5 document ids). IPS digests are normative regression values; PDF digests depend on ReportLab/pikepdf/qpdf/LittleCMS versions and are informative. Regenerated for 0.5.0 (profile 0.4.0): the fixtures gained structured dosage instructions, maximum doses, notes, body sites, allergy categories, dose numbers and reference ranges so that the coverage matrix (review 3, IMP-03) is exercised; the rendition shows the clinical content time separately from the issuance time (IMP-05). Checksums regenerated following reviewed LOINC display, severity display and inhalation method corrections.",
+    "libraries":  {
+                      "reportlab":  "5.0.1",
+                      "pikepdf":  "10.16.0",
+                      "pillow":  "12.3.0"
+                  },
+    "fixtures":  {
+                     "amara-okafor":  {
+                                          "ips_sha256":  "e635aadb4a2124e704995ceda147c3bf5e8871fb42fe37631cdbe3c188b650d3",
+                                          "pdf_sha256_informative":  "47f386167fdd7aa76627556a3ed6afac352bae7bb84539aef815a116e93ec4d5"
+                                      },
+                     "ines-duarte":  {
+                                         "ips_sha256":  "372ab99849bfbcd2380d6ef7150c1fc953364162146619bfdd1511cc4f9e7dea",
+                                         "pdf_sha256_informative":  "8eeefbeb7c0b699570fac29bf65d2a0276e9efe932c85e8f83e0e53b660a924a"
+                                     },
+                     "lukas-brenner":  {
+                                           "ips_sha256":  "b74888bb8450fc2af0da4ba17a9fac199b5f8e1fc001bc89219e742a629fb1ec",
+                                           "pdf_sha256_informative":  "35d5249bd073694ef0c06ed252ccb15ac12dfbae97b1c5e4bfbd5fee4b03b4ff"
+                                       }
+                 }
 }

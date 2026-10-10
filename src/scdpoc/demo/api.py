@@ -29,9 +29,29 @@ def build_router(svc: DemoService) -> APIRouter:
     def patient(key: str):
         return run(svc.patient, key)
 
-    @r.post("/compose/{key}", summary="2-4. Compose IPS, validate, render preview")
-    def compose(key: str, revise: bool = Query(False, description="apply the fixture's revision (replacement demo)")):
-        return run(svc.compose, key, revise)
+    @r.post("/compose/{key}", summary="2-4. Compose IPS, validate, render preview (a preserved snapshot draft)")
+    def compose(key: str, revise: bool = Query(False, description="apply the fixture's revision (replacement "
+                                                                   "for update)"),
+                correct: bool = Query(False, description="apply the fixture's correction (replacement for "
+                                                         "correction)")):
+        return run(svc.compose, key, revise, correct)
+
+    @r.post("/attest/{draft_id}", summary="Option AI: attest a reviewed draft (explicit attestation action)")
+    def attest(draft_id: str, attester: str = "Dr Sam Synthetic", attester_id: str = "SYN-PRAC-1",
+               kind: str = Query("person", pattern="^(person|organisation)$")):
+        return run(svc.attest, draft_id, attester, attester_id, kind)
+
+    @r.post("/withdraw/{key}", summary="Withdraw the current issuance (entered in error; ITI-57)")
+    def withdraw(key: str, reason: str = "entered in error"):
+        return run(svc.withdraw, key, reason)
+
+    @r.get("/preservation/events", summary="Hash-chained preservation event log (PRES-03)")
+    def events(document: str | None = None):
+        return run(svc.preservation_events, document)
+
+    @r.post("/preservation/fixity", summary="Run a fixity check over every issued artefact (PRES-06)")
+    def fixity():
+        return run(svc.fixity)
 
     @r.get("/drafts/{draft_id}", summary="Draft record (validation evidence)")
     def draft(draft_id: str):

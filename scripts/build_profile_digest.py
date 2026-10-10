@@ -8,7 +8,11 @@ without network access. It is NOT a substitute for the HL7 FHIR validator.
 
 Usage: python scripts/build_profile_digest.py path/to/hl7.fhir.uv.ips-<ver>.tgz
 """
-import hashlib, io, json, sys, tarfile
+import hashlib
+import io
+import json
+import sys
+import tarfile
 from pathlib import Path
 
 PROFILES = ["Bundle", "Composition", "Patient", "Condition", "AllergyIntolerance",

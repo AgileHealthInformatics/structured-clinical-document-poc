@@ -89,6 +89,8 @@ def document_entry_xml(de: DocumentEntry, include_status: bool = False) -> etree
         _slot(eo, "size", [str(de.size)])
     if de.repository_unique_id:
         _slot(eo, "repositoryUniqueId", [de.repository_unique_id])
+    if de.legal_authenticator:
+        _slot(eo, "legalAuthenticator", [de.legal_authenticator])
     _name(eo, de.title)
     if de.comments:
         d = etree.SubElement(eo, q("rim", "Description"))
@@ -200,6 +202,7 @@ def parse_document_entry(eo) -> DocumentEntry:
         author_person=author_person, author_role=author_role, source_patient_id=_first(s, "sourcePatientId"),
         hash=_first(s, "hash"), size=int(size) if size else None,
         repository_unique_id=_first(s, "repositoryUniqueId"), status=eo.get("status", STATUS_APPROVED),
+        legal_authenticator=_first(s, "legalAuthenticator"),
         comments=desc.get("value", "") if desc is not None else "")
 
 

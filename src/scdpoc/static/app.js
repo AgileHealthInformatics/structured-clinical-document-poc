@@ -2,7 +2,7 @@
 "use strict";
 
 const STEPS = ["Patient", "Compose IPS", "Validate", "Render", "Package", "PDF/A validation",
-  "Publish (XDS)", "Discover & retrieve", "Exchange projection", "EHDS preview", "Cross-border (B)", "Replace & tamper"];
+  "Publish (XDS)", "Discover & retrieve", "Exchange projection", "EHDS preview", "Cross-border (B)", "Lifecycle & fixity"];
 const S = { key: null, patient: null, draft: null, pkg: null, pub: null };
 const SB = { key: null };
 
@@ -79,6 +79,7 @@ async function loadPatients() {
       <p>${h(p.scenario)}</p>
       ${p.issuedVersions ? chip(`issued v${p.currentVersion}`, "info") : chip("not yet issued", "muted")}
       ${p.hasRevision ? chip("has revision scenario", "muted") : ""}
+      ${p.hasCorrection ? chip("has correction scenario", "muted") : ""}
     </button>`).join("");
   $$("#patients .patient").forEach((b) => b.addEventListener("click", () => selectPatient(b.dataset.key)));
 }
@@ -103,20 +104,51 @@ async function selectPatient(key) {
   enable(["compose"]);
   enable(["package", "publish"], false);
   const issued = p.issuances.length > 0;
-  enable(["discover", "ehds", "tamper-embedded", "tamper-outer", "ondemand"], issued);
-  enable(["replace"], issued && !!src.revision);
+  enable(["discover", "ehds", "tamper-embedded", "tamper-outer", "ondemand", "fixity"], issued);
+  enable(["attest", "attest-org"], false);
+  await lifecycleButtons();
   $("#run-all").disabled = false;
   if (issued) await renderHistory();
 }
 
+async function lifecycleButtons() {
+  const hst = await api("GET", `/api/demo/history/${S.key}`);
+  const current = hst.issuances.some((i) => i.lifecycleState === "issued");
+  const src = S.patient.source;
+  enable(["replace"], current && !!src.revision);
+  enable(["correct"], current && !!src.correction);
+  enable(["withdraw"], current);
+}
+
 /* --------------------------------------------------------------- steps */
-async function compose(btn, revise = false) {
-  const d = await busy(btn, () => api("POST", `/api/demo/compose/${S.key}${revise ? "?revise=true" : ""}`));
+const ASSURANCE = { "preserved-snapshot": ["Machine-generated preserved snapshot - not clinically attested", "warn"],
+  "attested-issuance": ["Attested clinical issuance", "ok"] };
+
+async function compose(btn, variant = "") {
+  const q = variant ? `?${variant}=true` : "";
+  const d = await busy(btn, () => api("POST", `/api/demo/compose/${S.key}${q}`));
   if (!d) return null;
+  return showDraft(d);
+}
+
+async function attest(btn, kind = "person") {
+  if (!S.draft) return null;
+  const d = await busy(btn, () => api("POST", `/api/demo/attest/${S.draft.draftId}?kind=${kind}`));
+  if (!d) return null;
+  toast(`Attested by ${d.attestationEvidence.attester}; a new draft carries the attestation.`);
+  return showDraft(d);
+}
+
+function showDraft(d) {
   S.draft = d; S.pkg = S.pub = null;
+  const [aText, aKind] = ASSURANCE[d.assurance];
+  const ev = d.attestationEvidence;
   for (let i = 5; i <= 10; i++) { $(`#o${i}`).innerHTML = ""; mark(i, null); }
   $("#o2").innerHTML = `
-    ${kv([["Document", `<code>${h(d.documentUrn)}</code>`], ["Version", `${h(d.version)}${d.replaces ? ` - replaces <code>${h(short(d.replaces, 18))}</code>` : ""}`], ["Issued", h(d.issued)], ["Series", `<code>${h(d.seriesId)}</code>`], ["IPS bytes", `${h(d.ips.bytes)} · SHA-256 <span class="hash">${h(d.ips.sha256)}</span>`]])}
+    <div class="callout ${aKind === "ok" ? "ok" : ""}"><strong>Assurance: ${h(aText)}.</strong> ${ev
+      ? `Attested by ${h(ev.attester)} (${h(ev.attesterKind || "person")}, mode ${h(ev.mode || "legal")}) at ${h(ev.time)} after reviewing draft <code>${h(short(ev.reviewedDraft, 8))}</code>; attested content digest <span class="hash">${h(short(ev.attestedContentDigest || "", 12))}</span>, unchanged by the attestation and checked again before publication. ${h(ev.method)}`
+      : "Author: SCD-PoC summary generator (Device). No attester is recorded and none is claimed in the IPS, the XDS metadata or the pages. Use <em>Attest this draft</em> to demonstrate the stronger option."}</div>
+    ${kv([["Document", `<code>${h(d.documentUrn)}</code>`], ["Version", `${h(d.version)}${d.replaces ? ` - replaces <code>${h(short(d.replaces, 18))}</code> (${h(d.replacementReason)})` : ""}`], ["Clinical content time", h(d.contentTime || "")], ["Issued", h(d.issued)], ["Series", `<code>${h(d.seriesId)}</code>`], ["IPS bytes", `${h(d.ips.bytes)} · SHA-256 <span class="hash">${h(d.ips.sha256)}</span>`]])}
     <h3>Composition sections</h3>
     <div class="scroll"><table class="t"><thead><tr><th>Section</th><th>LOINC</th><th>Entries</th><th>Empty reason</th></tr></thead><tbody>
     ${d.sections.map((s) => `<tr><td>${h(s.title)}</td><td><code>${h(s.code)}</code></td><td>${h(s.entries)}</td><td>${h(s.emptyReason || "")}</td></tr>`).join("")}</tbody></table></div>
@@ -140,6 +172,7 @@ async function compose(btn, revise = false) {
     <iframe class="frame" title="Rendered patient summary" sandbox src="/api/demo/drafts/${h(d.draftId)}/summary.html"></iframe>`;
   mark(4, "done");
   enable(["package"], v.publishable);
+  enable(["attest", "attest-org"], d.assurance === "preserved-snapshot");
   $("#s2").scrollIntoView({ behavior: "smooth", block: "start" });
   return d;
 }
@@ -194,20 +227,21 @@ async function publish(btn) {
   if (!r) return null;
   S.pub = r;
   const i = r.issuance, m = r.metadata;
-  const entryRows = (label, e, x) => `<tr><td>${h(label)}</td><td><code>${h(short(e.unique_id, 10))}</code></td><td>${h(e.mime_type)}</td><td><code>${h(e.codes.formatCode.code)}</code></td><td>${h(x)}</td></tr>`;
+  const entryRows = (label, e, x) => `<tr><td>${h(label)}</td><td><code>${h(short(e.unique_id, 10))}</code></td><td>${h(e.mime_type)}</td><td class="hash">${h(e.codes.formatCode.code)}</td><td>${h(x)}</td></tr>`;
   $("#o7").innerHTML = `
-    <div class="callout ok"><strong>Registered.</strong> Version ${h(i.version)} is now the current issuance${i.replaces ? `; it replaces <code>${h(short(i.replaces, 18))}</code> (RPLC)` : ""}.</div>
+    <div class="callout ok"><strong>Registered in one submission.</strong> Version ${h(i.version)} (${h(ASSURANCE[i.assurance][0].toLowerCase())}) is now the current issuance${i.replaces ? `; its IPS replaces <code>${h(short(i.replaces, 18))}</code> (RPLC, reason: ${h(i.replacementReason)}) and the registry deprecated the previous envelope as a transformation of the replaced IPS` : ""}. Both entries and their associations were accepted or rejected together.</div>
     <h3>DocumentEntries</h3>
     <div class="scroll"><table class="t"><thead><tr><th>Object</th><th>uniqueId</th><th>mimeType</th><th>formatCode</th><th>Associations</th></tr></thead><tbody>
-      ${entryRows("PDF/A-3b envelope", m.envelope, i.replaces ? "HasMember, RPLC → previous envelope" : "HasMember")}
-      ${entryRows("IPS projection", m.ips, "HasMember, XFRM → envelope")}
+      ${entryRows("IPS (source)", m.ips, i.replaces ? "HasMember; RPLC → previous IPS" : "HasMember")}
+      ${entryRows("Envelope", m.envelope, "HasMember; XFRM → IPS (rendered from it)")}
     </tbody></table></div>
-    <div class="callout">Distinct format codes (finding F-006): the envelope uses a locally governed code; only the raw IPS carries <code>urn:ihe:pcc:ips:2020</code>, so a consumer asking for IPS never receives <code>application/pdf</code>.</div>
-    ${kv([["Repository", `<code>${h(i.envelope.repositoryUniqueId)}</code>`], ["SubmissionSets", `<code>${h(short(i.envelope.submissionSet, 10))}</code>, <code>${h(short(i.ips.submissionSet, 10))}</code>`], ["Patient (CX)", `<code>${h(m.envelope.patient_id)}</code>`]])}
-    ${r.exchanges.map((x, n) => pre(`${x.transaction} #${n + 1} request (SOAP 1.2 / MTOM root part)`, x.request_xml) + pre(`${x.transaction} #${n + 1} response`, x.response_xml)).join("")}`;
+    <div class="callout">Distinct format codes (finding F-006): the envelope uses a locally governed code; only the IPS carries the sIPS format code <code>http://hl7.org/fhir/uv/ips/StructureDefinition/Bundle-uv-ips</code>, so a consumer asking for IPS never receives <code>application/pdf</code>.</div>
+    ${kv([["Repository", `<code>${h(i.envelope.repositoryUniqueId)}</code>`], ["SubmissionSet", `<code>${h(short(i.submissionSet, 10))}</code> (both entries)`], ["Patient (CX)", `<code>${h(m.envelope.patient_id)}</code>`]])}
+    ${r.exchanges.map((x, n) => pre(`${x.transaction} request (SOAP 1.2 / MTOM root part)`, x.request_xml) + pre(`${x.transaction} response`, x.response_xml)).join("")}`;
   mark(7, "done");
-  enable(["discover", "ehds", "tamper-embedded", "tamper-outer", "ondemand"]);
-  enable(["replace"], !!S.patient.source.revision);
+  enable(["discover", "ehds", "tamper-embedded", "tamper-outer", "ondemand", "fixity"]);
+  enable(["attest", "attest-org"], false);
+  await lifecycleButtons();
   $("#o8").innerHTML = ""; $("#o9").innerHTML = ""; $("#o10").innerHTML = "";
   await renderHistory();
   loadPatients();
@@ -255,14 +289,40 @@ async function ehds(btn) {
   return e;
 }
 
-async function replace(btn) {
-  const d = await compose(btn, true);
+async function replace(btn, variant = "revise") {
+  const d = await compose(btn, variant);
   if (!d) return;
   const p = await pkg(null);
   if (!p || !p.publishable) return;
   await publish(null);
-  toast(`Version ${d.version} issued; previous version deprecated, still retrievable.`);
+  toast(variant === "correct"
+    ? `Correction issued as version ${d.version} (status amended); known recipients flagged for notification.`
+    : `Version ${d.version} issued; previous version deprecated, still retrievable.`);
   $("#s12").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+async function withdraw(btn) {
+  const w = await busy(btn, () => api("POST", `/api/demo/withdraw/${S.key}?reason=${encodeURIComponent("entered in error (demonstration)")}`));
+  if (!w) return;
+  $("#o12").innerHTML = `
+    <div class="callout warn"><strong>Withdrawn without replacement.</strong> <code>${h(short(w.withdrawn, 18))}</code> is now <em>${h(w.state)}</em>: both DocumentEntries were deprecated in one ITI-57 Update Document Set. It remains retrievable by identifier but there is no current summary, and the gateway releases nothing across the border.</div>
+    ${pre("ITI-57 request", w.exchange.request_xml)}${pre("ITI-57 response", w.exchange.response_xml)}<div id="history"></div>`;
+  await renderHistory();
+  await lifecycleButtons();
+  loadPatients();
+}
+
+async function fixity(btn) {
+  const f = await busy(btn, () => api("POST", "/api/demo/preservation/fixity"));
+  if (!f) return;
+  const ev = await api("GET", "/api/demo/preservation/events");
+  $("#o12").innerHTML = `
+    <div class="callout ${f.passed ? "ok" : "bad"}"><strong>${f.passed ? "Fixity confirmed" : "Fixity failure"}.</strong> ${h(f.checked)} stored artefacts compared with the SHA-256 digests recorded at issuance; ${h(f.failed.length)} failed. Event chain ${f.chain.intact ? "intact" : "BROKEN"} (${h(f.chain.events)} events, head <span class="hash">${h(short(f.chain.head, 8))}</span>).</div>
+    <h3>Preservation events (latest first)</h3>
+    <div class="scroll"><table class="t"><thead><tr><th>Time</th><th>Type</th><th>Outcome</th><th>Artefact</th><th>Agent</th></tr></thead><tbody>
+      ${ev.events.slice().reverse().slice(0, 30).map((e) => `<tr><td class="nowrap">${h(e.time)}</td><td>${h(e.type)}</td><td>${okChip(e.outcome === "success", "success", "failure")}</td><td><code>${h(short(e.artefact.documentId || "", 12))}</code> ${h(e.artefact.role || "")}</td><td>${h(e.agent)}</td></tr>`).join("")}</tbody></table></div>
+    <div id="history"></div>`;
+  await renderHistory();
 }
 
 async function tamper(btn, mode) {
@@ -296,7 +356,7 @@ async function renderHistory() {
   if (!host) { $("#o12").insertAdjacentHTML("beforeend", `<div id="history"></div>`); host = $("#history"); }
   host.innerHTML = `<h3>Issued versions</h3><ul class="timeline">${hst.issuances.slice().reverse().map((i) => `
     <li><span class="v">v${h(i.version)}</span><div>
-      ${chip(`envelope ${i.envelopeStatus}`, i.envelopeStatus === "Approved" ? "ok" : "muted")} ${chip(`IPS ${i.ipsStatus}`, i.ipsStatus === "Approved" ? "ok" : "muted")}
+      ${chip(i.lifecycleState || "unknown", i.lifecycleState === "issued" ? "ok" : i.lifecycleState === "withdrawn" ? "bad" : "muted")} ${chip(`envelope ${i.envelopeStatus}`, i.envelopeStatus === "Approved" ? "ok" : "muted")} ${chip(`IPS ${i.ipsStatus}`, i.ipsStatus === "Approved" ? "ok" : "muted")} ${chip(ASSURANCE[i.assurance] ? (i.assurance === "attested-issuance" ? "attested" : "snapshot") : "", "info")}
       <div>Issued ${h(i.issued)} · <code>${h(short(i.documentUrn, 18))}</code></div>
       <div style="color:var(--muted)">${i.associations.map(assocLabel(i)).map(h).join(" · ") || "no associations"}</div>
       <div class="links"><a href="/api/demo/evidence/${h(i.packageId)}" target="_blank" rel="noopener">Evidence record</a><a href="/api/demo/package/${h(i.packageId)}/envelope.pdf" target="_blank" rel="noopener">Envelope</a></div>
@@ -304,12 +364,15 @@ async function renderHistory() {
 }
 
 function assocLabel(i) {
+  const mine = new Set([i.envelope.entryUUID, i.ips.entryUUID]);
+  const name = (u) => (u === i.envelope.entryUUID ? "envelope" : u === i.ips.entryUUID ? "IPS" : short(u, 12));
   return (a) => {
     const t = a.type.split(":").pop();
-    const out = a.source === i.envelope.entryUUID;
-    if (t === "RPLC") return out ? `replaces ${short(a.target, 14)} (RPLC)` : `replaced by ${short(a.source, 14)} (RPLC)`;
-    if (t === "XFRM") return out ? `transforms ${short(a.target, 14)}` : `IPS projection ${short(a.source, 14)} (XFRM)`;
-    return `${t} ${short(out ? a.target : a.source, 14)}`;
+    if (t === "UpdateAvailabilityStatus") return `${name(a.target)} withdrawn (ITI-57 UpdateAvailabilityStatus)`;
+    if (t === "XFRM" && mine.has(a.source) && mine.has(a.target)) return "envelope rendered from IPS (XFRM)";
+    if (t === "RPLC" && mine.has(a.source)) return `${name(a.source)} replaces ${short(a.target, 14)} (RPLC)`;
+    if (t === "RPLC" && mine.has(a.target)) return `replaced by ${short(a.source, 14)} (RPLC)`;
+    return `${t} ${name(a.source)} → ${name(a.target)}`;
   };
 }
 
@@ -425,6 +488,11 @@ const ACTIONS = {
   "xb-render": (b) => xbRender(b),
   "xb-preserve": (b) => xbPreserve(b),
   compose: (b) => compose(b),
+  attest: (b) => attest(b),
+  "attest-org": (b) => attest(b, "organisation"),
+  correct: (b) => replace(b, "correct"),
+  withdraw: (b) => withdraw(b),
+  fixity: (b) => fixity(b),
   package: (b) => pkg(b),
   publish: (b) => publish(b),
   discover: (b) => discover(b),

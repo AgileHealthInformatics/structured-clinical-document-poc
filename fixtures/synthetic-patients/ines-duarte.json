@@ -1,31 +1,222 @@
 {
   "key": "ines-duarte",
   "synthetic": true,
-  "scenario": "Older adult with atrial fibrillation and knee osteoarthritis on anticoagulation; latex allergy.",
+  "scenario": "Older adult with atrial fibrillation and knee osteoarthritis on anticoagulation; latex allergy. Has a correction scenario (apixaban dose recorded in error).",
   "patient": {
     "identifier": "SYN-000103",
     "family": "Duarte",
-    "given": ["Ines", "Maria"],
+    "given": [
+      "Ines",
+      "Maria"
+    ],
     "gender": "female",
     "birthDate": "1948-11-23",
     "country": "PT"
   },
   "problems": [
-    { "snomed": "49436004", "display": "Atrial fibrillation", "onset": "2021-01-07", "clinicalStatus": "active" },
-    { "snomed": "239873007", "display": "Osteoarthritis of knee", "onset": "2012-03-15", "clinicalStatus": "active" }
+    {
+      "snomed": "49436004",
+      "display": "Atrial fibrillation",
+      "onset": "2021-01-07",
+      "clinicalStatus": "active",
+      "verification": "confirmed",
+      "severity": {
+        "snomed": "6736007",
+        "display": "Moderate severity"
+      }
+    },
+    {
+      "snomed": "239873007",
+      "display": "Osteoarthritis of knee",
+      "onset": "2012-03-15",
+      "clinicalStatus": "active",
+      "verification": "provisional",
+      "fhir": {
+        "bodySite": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "72696002",
+                "display": "Knee region structure"
+              }
+            ]
+          }
+        ]
+      }
+    }
   ],
   "allergies": [
-    { "snomed": "111088007", "display": "Latex", "criticality": "low", "clinicalStatus": "active",
-      "reaction": { "snomed": "418363000", "display": "Itching of skin" } }
+    {
+      "snomed": "111088007",
+      "display": "Latex",
+      "criticality": "low",
+      "clinicalStatus": "active",
+      "reaction": {
+        "snomed": "418363000",
+        "display": "Itching of skin",
+        "severity": "mild"
+      },
+      "verification": "confirmed",
+      "fhir": {
+        "category": [
+          "environment"
+        ]
+      }
+    }
   ],
   "medications": [
-    { "atc": "B01AF02", "display": "apixaban", "dosage": "5 mg orally twice daily", "start": "2021-01-10", "status": "active" },
-    { "atc": "N02BE01", "display": "paracetamol", "dosage": "1 g orally up to 4 times daily as required", "start": "2012-03-20", "status": "active" }
+    {
+      "atc": "B01AF02",
+      "display": "apixaban",
+      "dosage": "5 mg orally twice daily",
+      "start": "2021-01-10",
+      "status": "active",
+      "dose": {
+        "value": 5,
+        "unit": "mg"
+      },
+      "route": {
+        "edqm": "20053000",
+        "display": "Oral use"
+      },
+      "timing": {
+        "frequency": 2,
+        "period": 1,
+        "periodUnit": "d"
+      }
+    },
+    {
+      "atc": "N02BE01",
+      "display": "paracetamol",
+      "dosage": "1 g orally up to 4 times daily as required",
+      "start": "2012-03-20",
+      "status": "active",
+      "dose": {
+        "value": 1,
+        "unit": "g"
+      },
+      "route": {
+        "edqm": "20053000",
+        "display": "Oral use"
+      },
+      "timing": {
+        "frequency": 4,
+        "period": 1,
+        "periodUnit": "d"
+      },
+      "asNeeded": true,
+      "fhir_dosage": {
+        "timing": {
+          "repeat": {
+            "frequency": 1,
+            "frequencyMax": 4,
+            "period": 1,
+            "periodUnit": "d"
+          }
+        },
+        "maxDosePerPeriod": {
+          "numerator": {
+            "value": 4,
+            "unit": "g",
+            "system": "http://unitsofmeasure.org",
+            "code": "g"
+          },
+          "denominator": {
+            "value": 1,
+            "unit": "d",
+            "system": "http://unitsofmeasure.org",
+            "code": "d"
+          }
+        }
+      }
+    }
   ],
   "immunizations": [
-    { "atc": "J07AL", "display": "pneumococcal vaccines", "date": "2024-11-05" }
+    {
+      "atc": "J07AL",
+      "display": "pneumococcal vaccines",
+      "date": "2024-11-05"
+    }
   ],
   "results": [
-    { "loinc": "718-7", "display": "Hemoglobin [Mass/volume] in Blood", "value": 12.9, "unit": "g/dL", "ucum": "g/dL", "date": "2026-07-30" }
-  ]
+    {
+      "loinc": "718-7",
+      "display": "Hemoglobin [Mass/volume] in Blood",
+      "value": 12.9,
+      "unit": "g/dL",
+      "ucum": "g/dL",
+      "date": "2026-07-30",
+      "interpretation": {
+        "code": "N",
+        "display": "Normal"
+      },
+      "fhir": {
+        "referenceRange": [
+          {
+            "low": {
+              "value": 12.0,
+              "unit": "g/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "g/dL"
+            },
+            "high": {
+              "value": 15.5,
+              "unit": "g/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "g/dL"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "revision": {
+    "note": "Repeat full blood count after anticoagulation review.",
+    "add_results": [
+      {
+        "loinc": "718-7",
+        "display": "Hemoglobin [Mass/volume] in Blood",
+        "value": 12.4,
+        "unit": "g/dL",
+        "ucum": "g/dL",
+        "date": "2026-09-30",
+        "interpretation": {
+          "code": "N",
+          "display": "Normal"
+        },
+        "fhir": {
+          "referenceRange": [
+            {
+              "low": {
+                "value": 12.0,
+                "unit": "g/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "g/dL"
+              },
+              "high": {
+                "value": 15.5,
+                "unit": "g/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "g/dL"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "correction": {
+    "note": "Apixaban dose recorded in error; correct dose is 2.5 mg twice daily (age and weight criteria).",
+    "fix_medications": [
+      {
+        "atc": "B01AF02",
+        "dosage": "2.5 mg orally twice daily",
+        "dose": {
+          "value": 2.5,
+          "unit": "mg"
+        }
+      }
+    ]
+  }
 }

@@ -1,0 +1,104 @@
+{
+  "documentId": "urn:uuid:8ff89987-740d-520f-bd89-6a34b082db93",
+  "seriesId": "362228b1-7872-57f7-b17b-909e18bbd382",
+  "version": 1,
+  "issued": "2026-10-08T12:05:00Z",
+  "assurance": "attested-issuance",
+  "attestationEvidence": {
+    "attester": "Dr Sam Synthetic",
+    "attesterId": "SYN-PRAC-1",
+    "attesterKind": "person",
+    "time": "2026-10-08T12:05:00+00:00",
+    "mode": "legal",
+    "method": "Conformance vector: a declared synthetic attestation action, not a clinical one",
+    "statement": "I have reviewed this patient summary and accept responsibility for its content.",
+    "reviewedDraft": "56454c48-ef57-5719-b6f2-f175c432b75b",
+    "reviewedIpsSha256": "12000376ce2f3ee70be5f110015937209e96c478d2328cd4e169db4c1f0eb26b",
+    "attestedContentDigest": "937ac59839c4c8c05a8ee501b2450425268b218f87ad3a9398df8e01a23dc4b1"
+  },
+  "envelopeSha256": "b295905ba2135e509671adc61f59725a53b321d56a15dce555fc9126e6f6a0ac",
+  "ipsSha256": "c4697218cff10397f77d7fae36c547ac3fab63a02f24f509c358a2e83a3fa1e4",
+  "renderer": "scdpoc-render-4",
+  "provenance": {
+    "sourceOrganisation": "Synthetic Health Organisation",
+    "custodian": "Synthetic Health Organisation",
+    "renderer": "scdpoc-render-4"
+  },
+  "validationEvidence": {
+    "ipsPackage": "hl7.fhir.uv.ips#2.0.1",
+    "preflight": {
+      "status": "passed",
+      "engine": "builtin-preflight"
+    },
+    "hl7Validator": {
+      "status": "not-run",
+      "version": null,
+      "detail": "vector generator: run the HL7 FHIR validator 7.0.1 to complete the evidence"
+    },
+    "pdfa": {
+      "validator": "veraPDF",
+      "status": "not-run",
+      "version": null,
+      "profile": "PDF/A-3B"
+    }
+  },
+  "representation": {
+    "ipsPackage": "hl7.fhir.uv.ips#2.0.1",
+    "fhirVersion": "4.0.1",
+    "pdfa": "PDF/A-3b (ISO 19005-3:2012)",
+    "renderer": "scdpoc-render-4",
+    "presentationResources": {
+      "layout": "scdpoc-render-4",
+      "labels": "en-GB",
+      "fonts": "Bitstream Vera, embedded"
+    },
+    "terminologies": [
+      {
+        "system": "http://loinc.org",
+        "version": null
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "version": null
+      },
+      {
+        "system": "http://standardterms.edqm.eu",
+        "version": null
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical",
+        "version": null
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification",
+        "version": null
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+        "version": null
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+        "version": null
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+        "version": null
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+        "version": null
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+        "version": null
+      },
+      {
+        "system": "http://www.whocc.no/atc",
+        "version": null
+      }
+    ]
+  },
+  "replaces": null,
+  "replacementReason": null
+}

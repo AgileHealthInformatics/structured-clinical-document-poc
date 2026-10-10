@@ -6,13 +6,18 @@
 |---|---|---|
 | `safety.py` | Synthetic-data guard; fixed fixture path | Remove only when moving to a governed environment |
 | `ips/composer.py` | Map a source record to an IPS document Bundle; serialise **once** | Yes - replace the source mapping with your clinical extract |
+| `ips/attestation.py` | Attestation sequence: attested content digest, final IPS = reviewed draft + attestation | Keep the digest definition; drive it from your sign-off workflow |
 | `ips/view.py` | Single view model derived from coded IPS content | Keep (one-way rendering rule) |
 | `ips/validator.py` | Offline pre-flight + HL7 FHIR validator wrapper; publication gate | Keep gate; swap engines as needed |
 | `render/` | Deterministic HTML and PDF pages from the view model | Yes, if the one-way rule and IC-7 check are kept |
 | `pdfa/` | PDF/A-3b packaging, Associated File extraction, pre-flight, veraPDF | Keep pattern; packager internals replaceable |
 | `integrity.py` | Issuance-record checks (IC-1..IC-7), tamper simulations | Keep |
+| `fidelity.py` | Rendition fidelity contract (the profile's coverage matrix), independent of the renderer; reports populated elements it cannot verify | Keep |
+| `checker.py`, `vectors.py`, `conformance_kit.py` | Catalogue-driven Checker with verdicts, deterministic vectors, live scenarios | Keep; an independent Checker is stronger evidence |
+| `lifecycle.py` | Issuance state-transition table (issue, replace for update or correction, withdraw) | Keep |
+| `preservation.py` | Hash-chained preservation events; independent fixity check | Keep the evidence model; anchor the chain with an independent party or seal |
 | `xds/` | XDS.b Repository and Registry actors, ebRIM, SOAP/MTOM, Document Source/Consumer client | Yes - production XDS infrastructure |
-| `mhd/` | ITI-67/68 façade and `Patient/$summary` | Yes - production MHD Document Responder |
+| `mhd/` | ITI-67/68 façade (time mapping, lifecycle-state extension) and `Patient/$summary` | Yes - production MHD Document Responder |
 | `ehds/` | Export adapter boundary and readiness preview | Yes - this is the intended extension point |
 | `demo/` | Tutorial orchestration, file-backed work records | Demonstrator only |
 
@@ -35,10 +40,10 @@ sequenceDiagram
   D->>P: render pages from view model, embed exact IPS bytes
   P-->>D: envelope + pre-flight + veraPDF + byte/rendition checks (gate)
   UI->>D: publish(package)
-  D->>R: ITI-41 #1 envelope (+RPLC to previous envelope)
-  R->>G: register (policy, deprecate replaced + its XFRM transforms)
-  D->>R: ITI-41 #2 IPS projection (XFRM -> envelope)
-  R->>G: register
+  D->>R: ITI-41: IPS + envelope, XFRM envelope->IPS, RPLC IPS->previous IPS
+  R->>G: validate whole submission (no side effects)
+  R->>R: store both objects (write-once)
+  R->>G: register; deprecate replaced IPS and its XFRM (previous envelope)
   UI->>D: discover / retrieve
   D->>G: ITI-18 FindDocuments
   D->>M: ITI-67 DocumentReference search
@@ -78,21 +83,22 @@ Each retrieval (and each tamper simulation) is checked against the record made a
 | IC-4 | Embedded IPS SHA-256 equals issuance record | Altered structured payload |
 | IC-5 | Embedded IPS byte-identical to the exchange projection | Divergence between preserved and exchanged representations |
 | IC-6 | Embedded Bundle identifier equals the registered document | Payload swapped from another issuance |
-| IC-7 | Every fact derived from the embedded IPS appears in page text | Pages and payload saying different things |
+| IC-7 | Pages satisfy the fidelity contract derived from the embedded IPS (independently of the renderer): every contract element present in its section; no codes from other sections or unknown codes | Pages and payload saying different things |
 
 ## Lifecycle
 
 | Object | Lifecycle | Registry behaviour |
 |---|---|---|
-| Issued PDF/A envelope | Immutable stable document | New version = new DocumentEntry with RPLC; old entry Deprecated, still retrievable |
-| Issued IPS projection | Immutable, byte-identical to the envelope's Associated File | Registered with XFRM to its envelope; deprecated with it |
+| Issued IPS | Immutable structured source | New version = new DocumentEntry with RPLC → previous IPS; old entry Deprecated, still retrievable |
+| Issued PDF/A envelope | Immutable, rendered from the IPS and embedding it | Registered with XFRM → its IPS; deprecated with the IPS it transforms |
 | Current IPS (`Patient/$summary`) | On-demand | Never registered; tagged `on-demand` |
 
 ## Data on disk
 
 ```
 $SCDPOC_DATA_DIR/
-├── scdpoc.sqlite3        registry metadata, repository index, audit log
+├── scdpoc.sqlite3        registry metadata, repository index, MHD id mapping, audit log
+├── preservation/         events.jsonl (hash-chained preservation events), anchor.json (chain head)
 ├── repository/           write-once objects (mode 0444, O_EXCL)
 └── work/
     ├── drafts/<id>/      ips.json + record.json (validation evidence)
